@@ -15,6 +15,13 @@ function searchClubByName(req, res){
 }
 */
 
+//json so em post e put
+
+
+
+
+
+
 /**
  * 
  * @param {Request} req 
@@ -39,14 +46,40 @@ async function createGroup(req, res){
     }
 }
 
+
+
+
+
+
 /**
  * 
  * @param {Request} req 
  * @param {Response} res 
  */
-function editGroup(req, res){
+async function editGroup(req, res){
+    try{
+        const body = await req.json();
 
+        if(body.name === undefined){
+            error(res, "Group name missing");
+        }
+        else if(body.description === undefined){
+            error(res, "Group description missing");
+        }
+        else {
+            //TODO depende de service
+        }
+        
+    }catch(e){
+        console.error(e);
+        error(res, SERVER_ERROR, true);
+    }
 }
+
+
+
+
+
 
 /**
  * 
@@ -54,8 +87,18 @@ function editGroup(req, res){
  * @param {Response} res 
  */
 function listGroup(req, res){
+    try{
+        
 
+    }catch(e){
+        console.error(e);
+        error(res, SERVER_ERROR, true);
+    }
 }
+
+
+
+
 
 /**
  * 
@@ -63,8 +106,19 @@ function listGroup(req, res){
  * @param {Response} res 
  */
 function deleteGroup(req, res){
+    try{
+        
 
+    }catch(e){
+        console.error(e);
+        error(res, SERVER_ERROR, true);
+    }
 }
+
+
+
+
+
 
 /**
  * 
@@ -72,17 +126,40 @@ function deleteGroup(req, res){
  * @param {Response} res 
  */
 function getDetailsOfGroup(req, res){
+    try{
+        
 
+    }catch(e){
+        console.error(e);
+        error(res, SERVER_ERROR, true);
+    }
 }
+
+
+
+
+
 
 /**
  * 
  * @param {Request} req 
  * @param {Response} res 
  */
-function addTeamToGroup(req, res){
+async function addTeamToGroup(req, res){
+    try{
+        const body = await req.json();
 
+
+    }catch(e){
+        console.error(e);
+        error(res, SERVER_ERROR, true);
+    }
 }
+
+
+
+
+
 
 /**
  * 
@@ -90,7 +167,13 @@ function addTeamToGroup(req, res){
  * @param {Response} res 
  */
 function removeTeamFromGroup(req, res){
+    try{
+        
 
+    }catch(e){
+        console.error(e);
+        error(res, SERVER_ERROR, true);
+    }
 }
 
 
