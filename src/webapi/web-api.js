@@ -19,9 +19,6 @@ function searchClubByName(req, res){
 
 
 
-
-
-
 /**
  * 
  * @param {Request} req 
@@ -45,10 +42,6 @@ async function createGroup(req, res){
         error(res, SERVER_ERROR, true);
     }
 }
-
-
-
-
 
 
 /**
@@ -88,7 +81,7 @@ async function editGroup(req, res){
  */
 function listGroup(req, res){
     try{
-        
+        //TODO depende de service
 
     }catch(e){
         console.error(e);
@@ -107,7 +100,7 @@ function listGroup(req, res){
  */
 function deleteGroup(req, res){
     try{
-        
+        //TODO depende de service
 
     }catch(e){
         console.error(e);
@@ -127,7 +120,7 @@ function deleteGroup(req, res){
  */
 function getDetailsOfGroup(req, res){
     try{
-        
+        //TODO depende de service
 
     }catch(e){
         console.error(e);
@@ -149,6 +142,19 @@ async function addTeamToGroup(req, res){
     try{
         const body = await req.json();
 
+        if(body.teamId === undefined){
+            error(res, "Team Id is missing");
+        }
+        else if(body.leagueId  === undefined){
+            error(res, "League Id is missing");
+        }
+        else if(body.season  === undefined){
+            error(res, "Season is missing");
+        }
+        else {
+            //TODO depende de service
+        }
+
 
     }catch(e){
         console.error(e);
@@ -168,7 +174,7 @@ async function addTeamToGroup(req, res){
  */
 function removeTeamFromGroup(req, res){
     try{
-        
+        //TODO depende de service
 
     }catch(e){
         console.error(e);
