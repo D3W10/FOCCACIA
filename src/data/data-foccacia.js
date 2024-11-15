@@ -36,7 +36,7 @@ const groups = [];
  * @param {Team[]} teams
  * @returns {Promise<Group>} The created group
  */
-export async function createGroup(name, description = "", teams = []) {
+export function createGroup(name, description = "", teams = []) {
     const group = {
         id: nextId++,
         name,
@@ -45,31 +45,31 @@ export async function createGroup(name, description = "", teams = []) {
     };
 
     groups.push(group);
-    return group;
+    return Promise.resolve(group);
 }
 
 /**
  * Gets a group by its ID
  * @param {User["id"]} id 
  * @param {User["token"]} token 
- * @returns {Group[]}
+ * @returns {Promise<Group[]>}
  */
-export async function getGroupsByUser(id, token) {
-    return groups.filter(g => g.userId === id && g.token === token);
+export function getGroupsByUser(id, token) {
+    return Promise.resolve(groups.filter(g => g.userId === id && g.token === token));
 }
 
 /**
  * Updates a group
  * @param {Number} id
  * @param {Partial<Group>} updates
- * @returns {Group|undefined} The updated group or undefined if not found
+ * @returns {Promise<Group|undefined>} The updated group or undefined if not found
  */
-export async function updateGroup(id, updates) {
+export function updateGroup(id, updates) {
     const group = getGroupById(id);
     if (!group) return undefined;
 
     Object.assign(group, updates);
-    return group;
+    return Promise.resolve(group);
 }
 
 /**
@@ -77,38 +77,48 @@ export async function updateGroup(id, updates) {
  * @param {Number} id
  * @returns {boolean} True if group was deleted, false if not found
  */
-export async function deleteGroup(id) {
+export function deleteGroup(id) {
     const index = groups.findIndex(g => g.id === id);
     if (index === -1) return false;
     
     groups.splice(index, 1);
-    return true;
+    return Promise.resolve(true);
 }
 
 /**
  * Adds teams to a group
  * @param {Number} groupId
  * @param {Number[]} teamIds
- * @returns {Group|undefined}
+ * @returns {Promise<Group|undefined>}
  */
 export function addTeamsToGroup(groupId, teamIds) {
     const group = getGroupById(groupId);
     if (!group) return undefined;
 
     group.teamIds = [...new Set([...group.teamIds, ...teamIds])];
-    return group;
+    return Promise.resolve(group);
 }
 
 /**
  * Removes teams from a group
  * @param {Number} groupId
  * @param {Number[]} teamIds
- * @returns {Group|undefined}
+ * @returns {Promise<Group|undefined>}
  */
 export function removeTeamsFromGroup(groupId, teamIds) {
     const group = getGroupById(groupId);
     if (!group) return undefined;
 
     group.teamIds = group.teamIds.filter(id => !teamIds.includes(id));
-    return group;
+    return Promise.resolve(group);
+}
+
+export function createUser(name) {
+    users.push({
+        id: nextId++,
+        name,
+        token: crypto.randomUUID()
+    });
+
+    return Promise.resolve();
 }
