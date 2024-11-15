@@ -35,7 +35,7 @@ export function getError(code) {
  * @param {Object} data
  * @param {Number} status
  */
-export function buildHTTPError(error, data, status = 200) {
+export function buildHttpError(error, data, status = 200) {
     const errorCode = errorCodes[error];
     if (errorCode == 0)
         return [{

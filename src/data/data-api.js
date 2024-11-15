@@ -1,11 +1,16 @@
 import { getError } from "../utils/errorManager";
 
+/**
+ * @typedef {import("./data-foccacia.js").Team} Team
+ */
+
 const API_URL = "https://v3.football.api-sports.io";
 const API_KEY = "83a825990145b3950d8add20554c52e6";
 
 /**
  * 
  * @param {String} name 
+ * @returns {Team[]}
  * @throws {TypeError}
  */
 export async function getTeamsByName(name) {
