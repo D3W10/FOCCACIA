@@ -1,5 +1,5 @@
 import { getTeamsByName } from "../data/data-api.js";
-import { createGroup, deleteGroup } from "../data/data-foccacia.js";
+import { createGroup, createUser, deleteGroup, updateGroup } from "../data/data-foccacia.js";
 
 const service = {
     createGroup: (name, description, teams) => {
@@ -7,7 +7,21 @@ const service = {
 
         createGroup(name, description, equipas);
     },
-    deleteGroup: id => deleteGroup(id)
+    editGroup: (id, updates) => updateGroup(id, updates),    
+    listGroup: () => {
+
+    },
+    deleteGroup: id => deleteGroup(id),
+    getDetailsOfGroup: () => {
+
+    },
+    addTeamToGroup: () => {
+
+    },
+    removeTeamFromGroup: () => {
+
+    }
+    
 }
 
 export default service;

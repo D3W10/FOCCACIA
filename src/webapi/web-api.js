@@ -16,8 +16,6 @@ function searchClubByName(req, res){
 */
 //json so em post e put
 
-
-
 /**
  * 
  * @param {Request} req 
@@ -45,7 +43,6 @@ async function createGroup(req, res){
     }
 }
 
-
 /**
  * 
  * @param {Request} req 
@@ -55,14 +52,14 @@ async function editGroup(req, res){
     try{
         const body = await req.json();
 
-        if(body.name === undefined){
-            error(res, "Group name missing");
-        }
-        else if(body.description === undefined){
-            error(res, "Group description missing");
+        if(body.name === undefined && body.description === undefined){
+            error(res, "No fields were specified");
         }
         else {
-            //TODO depende de service
+            service.editGroup(req.params.id, {
+                name: body.name,
+                description: body.description
+            })
         }
         
     }catch(e){
