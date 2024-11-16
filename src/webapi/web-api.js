@@ -166,6 +166,16 @@ function removeTeamFromGroup(req, res){
     }
 }
 
+function createUser(req,res){
+    try{
+        //TODO depende de service
+
+    }catch(e){
+        console.error(e);
+        error(res, SERVER_ERROR, true);
+    }
+}
+
 
 export const webapi = {
     //searchClubByName
@@ -175,7 +185,8 @@ export const webapi = {
     deleteGroup,
     getDetailsOfGroup,
     addTeamToGroup,
-    removeTeamFromGroup
+    removeTeamFromGroup,
+    createUser
 }
 
 export default webapi

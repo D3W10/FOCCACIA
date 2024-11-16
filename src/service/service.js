@@ -8,7 +8,7 @@ const service = {
         createGroup(name, description, equipas);
     },
     editGroup: (id, updates) => updateGroup(id, updates),    
-    listGroup: () => {
+    listGroup: (id, token) => {
 
     },
     deleteGroup: id => deleteGroup(id),
@@ -20,8 +20,10 @@ const service = {
     },
     removeTeamFromGroup: () => {
 
+    },
+    createUser: () => {
+
     }
-    
 }
 
 export default service;

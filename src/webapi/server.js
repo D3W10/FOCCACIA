@@ -20,5 +20,6 @@ app.delete("/groups/:id", webApi.deleteGroup)
 app.get("/groups/:id", webApi.getDetailsOfGroup)
 app.post("/groups/:id/teams", webApi.addTeamToGroup)
 app.delete("/groups/:id/teams/:idt", webApi.removeTeamFromGroup)
+app.post("/user", webApi.createUser)
 
 app.listen(8080, ()=>console.log("Listening..."))
