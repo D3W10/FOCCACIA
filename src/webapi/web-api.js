@@ -109,17 +109,25 @@ function deleteGroup(req, res){
     }
 }
 
-
 /**
  * 
  * @param {Request} req 
  * @param {Response} res 
  */
 function getDetailsOfGroup(req, res){
-    try{
-        //TODO depende de service
-
-    }catch(e){
+    try {
+        const id = +req.params.id
+        const auth = req.headers.get("Authorization")
+        if(auth === null){
+            error(res, "Unauthorized", 401);
+        }
+        else if(isNaN(id)){
+            error(res, "Invalid Group ID")
+        }
+        else{
+            service.getDetailsOfGroup(id, token)
+        }
+    } catch (e) {
         console.error(e);
         error(res, SERVER_ERROR, 500);
     }
