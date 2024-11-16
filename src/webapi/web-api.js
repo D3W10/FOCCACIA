@@ -191,23 +191,27 @@ function removeTeamFromGroup(req, res){
     }
 }
 
-
-
-
-function createUser(req,res){
+/**
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ */
+async function createUser(req,res){
     try{
-        //TODO depende de service
+        const body = await req.json();
+
+        if(body.name === undefined){
+            error(res, "Name is missing");
+        }
+        else{
+            service.createUser(body.name);
+        }
 
     }catch(e){
         console.error(e);
         error(res, SERVER_ERROR, 500);
     }
 }
-
-
-
-
-
 
 export const webapi = {
     //searchClubByName

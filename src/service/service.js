@@ -18,9 +18,7 @@ const service = {
     },
     addTeamToGroup: (gid, tid) =>addTeamsToGroup(gid, tid),
     removeTeamFromGroup: (id, idt) => removeTeamsFromGroup(id,idt),
-    createUser: () => {
-
-    }
+    createUser: name => createUser(name)
 }
 
 export default service;
