@@ -166,37 +166,6 @@ async function addTeamToGroup(req, res){
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * 
  * @param {Request} req 
@@ -204,13 +173,26 @@ async function addTeamToGroup(req, res){
  */
 function removeTeamFromGroup(req, res){
     try{
-        //TODO depende de service
+        const gid = +req.params.id
+        const tid = +req.params.idt
 
+        if(isNaN(id)){
+            error(res, "Invalid Group ID")
+        }
+        else if(isNaN(tid)){
+            error(res, "Invalid Team ID")
+        }
+        else{
+            service.removeTeamFromGroup(id, [idt])
+        }
     }catch(e){
         console.error(e);
         error(res, SERVER_ERROR, 500);
     }
 }
+
+
+
 
 function createUser(req,res){
     try{
@@ -221,6 +203,10 @@ function createUser(req,res){
         error(res, SERVER_ERROR, 500);
     }
 }
+
+
+
+
 
 
 export const webapi = {

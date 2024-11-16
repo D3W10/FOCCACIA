@@ -17,9 +17,7 @@ const service = {
             })
     },
     addTeamToGroup: (gid, tid) =>addTeamsToGroup(gid, tid),
-    removeTeamFromGroup: () => {
-
-    },
+    removeTeamFromGroup: (id, idt) => removeTeamsFromGroup(id,idt),
     createUser: () => {
 
     }
