@@ -16,9 +16,7 @@ const service = {
                 g.filter(group => group.id === id)
             })
     },
-    addTeamToGroup: () => {
-
-    },
+    addTeamToGroup: (gid, tid) =>addTeamsToGroup(gid, tid),
     removeTeamFromGroup: () => {
 
     },

@@ -133,7 +133,6 @@ function getDetailsOfGroup(req, res){
     }
 }
 
-
 /**
  * 
  * @param {Request} req 
@@ -142,8 +141,12 @@ function getDetailsOfGroup(req, res){
 async function addTeamToGroup(req, res){
     try{
         const body = await req.json();
-
-        if(body.teamId === undefined){
+        const gid = +req.params.id
+        
+        if(isNaN(gid)){
+            error(res, "Invalid Group ID")
+        }
+        else if(body.teamId === undefined){
             error(res, "Team Id is missing");
         }
         else if(body.leagueId  === undefined){
@@ -153,7 +156,7 @@ async function addTeamToGroup(req, res){
             error(res, "Season is missing");
         }
         else {
-            //TODO depende de service
+            service.addTeamToGroup(gid, [body.teamId]);
         }
 
 
@@ -162,6 +165,36 @@ async function addTeamToGroup(req, res){
         error(res, SERVER_ERROR, 500);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /**
