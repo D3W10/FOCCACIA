@@ -49,26 +49,26 @@ export function createGroup(name, description = "", teams = []) {
 }
 
 /**
- * Gets a group by its ID
- * @param {User["id"]} id 
+ * Gets all the groups from a user
  * @param {User["token"]} token 
  * @returns {Promise<Group[]>}
  */
-export function getGroupsByUser(id, token) {
-    return Promise.resolve(groups.filter(g => g.userId === id && g.token === token));
+export function getGroupsByUser(token) {
+    return Promise.resolve(groups.filter(g => g.token === token));
 }
 
 /**
  * Updates a group
  * @param {Number} id
- * @param {Partial<Group>} updates
+ * @param {Partial<Group>} changes
  * @returns {Promise<Group|undefined>} The updated group or undefined if not found
  */
-export function updateGroup(id, updates) {
+export function updateGroup(id, changes) {
     const group = getGroupById(id);
-    if (!group) return undefined;
+    if (!group)
+        return undefined;
 
-    Object.assign(group, updates);
+    Object.assign(group, changes);
     return Promise.resolve(group);
 }
 
