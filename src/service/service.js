@@ -8,9 +8,7 @@ const service = {
         createGroup(name, description, equipas);
     },
     editGroup: (id, updates) => updateGroup(id, updates),    
-    listGroup: (id, token) => {
-
-    },
+    listGroup: token => getGroupsByUser(token),
     deleteGroup: id => deleteGroup(id),
     getDetailsOfGroup: () => {
 

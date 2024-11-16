@@ -2,8 +2,8 @@ import service from "../service/service.js";
 
 const SERVER_ERROR = "Unknown Error";
 
-function error(res, message, isServer = false){
-    res.status(!isServer ? 400 : 500).json({
+function error(res, message, status = 400){
+    res.status(status).json({
         message
     });
 }
@@ -34,12 +34,12 @@ async function createGroup(req, res){
             error(res, "Team is missing")
         }
         else {
-            service.createGroup
+            service.createGroup(body.name, body.description, body.teams)
         }
 
     }catch(e){
         console.error(e);
-        error(res, SERVER_ERROR, true);
+        error(res, SERVER_ERROR, 500);
     }
 }
 
@@ -64,10 +64,9 @@ async function editGroup(req, res){
         
     }catch(e){
         console.error(e);
-        error(res, SERVER_ERROR, true);
+        error(res, SERVER_ERROR, 500);
     }
 }
-
 
 /**
  * 
@@ -76,14 +75,19 @@ async function editGroup(req, res){
  */
 function listGroup(req, res){
     try{
-        //nao necessita validaçao pela parte do utilizador
+        const auth = req.headers.get("Authorization")
+        if(auth === null){
+            error(res, "Unauthorized", 401);
+        }
+        else{
+            service.listGroup(auth.replace("Bearer ", ""))
+        }
 
     }catch(e){
         console.error(e);
-        error(res, SERVER_ERROR, true);
+        error(res, SERVER_ERROR, 500);
     }
 }
-
 
 /**
  * 
@@ -92,15 +96,16 @@ function listGroup(req, res){
  */
 function deleteGroup(req, res){
     try{
-        if(isNaN(+req.params.id)){
+        const id = +req.params.id;
+        if(isNaN(id)){
             error(res, "Invalid Group ID")
         }
         else{
-            service.deleteGroup
+            service.deleteGroup(id)
         }
     }catch(e){
         console.error(e);
-        error(res, SERVER_ERROR, true);
+        error(res, SERVER_ERROR, 500);
     }
 }
 
@@ -116,7 +121,7 @@ function getDetailsOfGroup(req, res){
 
     }catch(e){
         console.error(e);
-        error(res, SERVER_ERROR, true);
+        error(res, SERVER_ERROR, 500);
     }
 }
 
@@ -146,7 +151,7 @@ async function addTeamToGroup(req, res){
 
     }catch(e){
         console.error(e);
-        error(res, SERVER_ERROR, true);
+        error(res, SERVER_ERROR, 500);
     }
 }
 
@@ -162,7 +167,7 @@ function removeTeamFromGroup(req, res){
 
     }catch(e){
         console.error(e);
-        error(res, SERVER_ERROR, true);
+        error(res, SERVER_ERROR, 500);
     }
 }
 
@@ -172,7 +177,7 @@ function createUser(req,res){
 
     }catch(e){
         console.error(e);
-        error(res, SERVER_ERROR, true);
+        error(res, SERVER_ERROR, 500);
     }
 }
 
