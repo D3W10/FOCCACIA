@@ -1,13 +1,13 @@
-import data from "./tasks-data.js"
+import { getTeamsByName } from "../data/data-api.js";
+import { createGroup, deleteGroup } from "../data/data-foccacia.js";
 
-function searchClubByName(limit){
-    //verificar se limite é valido (e.g. positivo) 
-    return data.searchClubByName()
+const service = {
+    createGroup: (name, description, teams) => {
+        const equipas = teams.map(e => getTeamsByName(e)[0]);
+
+        createGroup(name, description, equipas);
+    },
+    deleteGroup: id => deleteGroup(id)
 }
 
-
-export const service = {
-    searchClubByName
-}
-
-export default service
+export default service;

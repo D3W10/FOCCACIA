@@ -14,7 +14,6 @@ function searchClubByName(req, res){
     res.json(service.searchClubByName())
 }
 */
-
 //json so em post e put
 
 
@@ -33,8 +32,11 @@ async function createGroup(req, res){
         else if(body.description === undefined){
             error(res, "Group description missing");
         }
+        else if(body.teams === undefined){
+            error(res, "Team is missing")
+        }
         else {
-            //TODO depende de service
+            service.createGroup
         }
 
     }catch(e){
@@ -70,10 +72,6 @@ async function editGroup(req, res){
 }
 
 
-
-
-
-
 /**
  * 
  * @param {Request} req 
@@ -81,16 +79,13 @@ async function editGroup(req, res){
  */
 function listGroup(req, res){
     try{
-        //TODO depende de service
+        //nao necessita validaçao pela parte do utilizador
 
     }catch(e){
         console.error(e);
         error(res, SERVER_ERROR, true);
     }
 }
-
-
-
 
 
 /**
@@ -100,17 +95,17 @@ function listGroup(req, res){
  */
 function deleteGroup(req, res){
     try{
-        //TODO depende de service
-
+        if(isNaN(+req.params.id)){
+            error(res, "Invalid Group ID")
+        }
+        else{
+            service.deleteGroup
+        }
     }catch(e){
         console.error(e);
         error(res, SERVER_ERROR, true);
     }
 }
-
-
-
-
 
 
 /**
@@ -127,10 +122,6 @@ function getDetailsOfGroup(req, res){
         error(res, SERVER_ERROR, true);
     }
 }
-
-
-
-
 
 
 /**
@@ -163,10 +154,6 @@ async function addTeamToGroup(req, res){
 }
 
 
-
-
-
-
 /**
  * 
  * @param {Request} req 
@@ -181,8 +168,6 @@ function removeTeamFromGroup(req, res){
         error(res, SERVER_ERROR, true);
     }
 }
-
-
 
 
 export const webapi = {

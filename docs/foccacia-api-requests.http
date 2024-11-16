@@ -13,5 +13,9 @@ POST http://localhost:8080/tasks
 Content-Type: application/json
 
 {
-    "text" : "Temos de fazer o trabalho de PI"
+    "name" : "Name group",
+    "description": "",
+    "teams": [
+        "Benfica"
+    ]
 }
