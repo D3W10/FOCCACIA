@@ -1,55 +1,22 @@
 /**
- * @typedef {keyof typeof errorCodes} ErrorCode
- * 
- * @typedef {Object} ErrorObj
- * @property {Number} code
- * @property {String} message
+ * @typedef {object} ErrorObj
+ * @property {number} status
+ * @property {(...args) => string} message
  */
-
-const errorCodes = {
-    EXTERNAL_ERROR: -3,
-    JSON_PARSE_ERROR: -2,
-    UNKNOWN_ERROR: -1
-};
 
 /**
- * @type {Record<ErrorCode, string>}
+ * @type {Record<string, ErrorObj>}
  */
-const errorMessages = {
-    EXTERNAL_ERROR: "An external error occurred",
-    JSON_PARSE_ERROR: "Error parsing JSON response",
-    UNKNOWN_ERROR: "An unknown error occurred on our side"
-};
-
-/**
- * 
- * @param {keyof typeof errorCodes} code 
- */
-export function getError(code) {
-    return `${errorCodes[code]} | ${errorMessages[code]}`;
+const errors = {
+    default: { status: 500, message: () => "Unknown error" },
+    w1: { status: 400, message: () => "Group name missing" },
+    d1: { status: 404, message: () => "User not found" },
+    d2: { status: 404, message: () => "Group not found" }
 }
 
-/**
- * 
- * @param {ErrorCode} error 
- * @param {Object} data
- * @param {Number} status
- */
-export function buildHttpError(error, data, status = 200) {
-    const errorCode = errorCodes[error];
-    if (errorCode == 0)
-        return [{
-            code: 0,
-            data
-        }, status];
-    else if (errorCode > 0)
-        return [{
-            code: errorCode,
-            message: errorMessages[error]
-        }, 400];
-    else
-        return [{
-            code: -1,
-            message: errorMessages[-1]
-        }, 500];
+export function getError(res, code, ...args) {
+    if (!code || !(code in errors))
+        return res.status(errors.default.status).json({ message: errors.default.message(args) });
+
+    return res.status(errors[code].status).json({ message: errors[code].message(args) });
 }

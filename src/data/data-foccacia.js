@@ -29,22 +29,46 @@ const users = [];
 /** @type {Group[]} */
 const groups = [];
 
+function getUserByToken(token){
+    return users.find(u => u.token === token);
+}
+
+function error(code){
+    return Promise.reject({ code });
+}
+
 /**
  * Creates a new group
  * @param {String} name
  * @param {String} description
  * @param {Team[]} teams
- * @returns {Promise<Group>} The created group
+ * @param {User["token"]} token
+ * @returns {Promise<Omit<Group, "userId">>} The created group
  */
-function createGroup(name, description = "", teams = []) {
+function createGroup(name, description, teams, token) {
+    const user = getUserByToken(token);
+    if (!user)
+        return error("d1");
+
     const group = {
         id: nextId++,
         name,
-        description,
-        teams
+        description: description || "",
+        userId: user.id,
+        teams: teams || []
     };
 
     groups.push(group);
+
+    const { userId, ...safeGroup } = group;
+    return Promise.resolve(safeGroup);
+}
+
+function getGroupById(id) {
+    const group = groups.find(g => g.id === id);
+    if (!group)
+        return error("d2");
+
     return Promise.resolve(group);
 }
 

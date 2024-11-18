@@ -1,8 +1,8 @@
 export default (api, foccacia) => ({
-    createGroup: (name, description, teams) => {
-        const equipas = teams.map(e => api.getTeamsByName(e)[0]);
+    createGroup: (name, description = "", teamIds = []) => {
+        const teams = teamIds.map(e => api.getTeamsByName(e)[0]);
 
-        foccacia.createGroup(name, description, equipas);
+        return foccacia.createGroup(name, description, teams);
     },
     editGroup: (id, updates) => foccacia.updateGroup(id, updates),    
     listGroup: token => foccacia.getGroupsByUser(token),

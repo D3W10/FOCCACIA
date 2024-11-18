@@ -1,3 +1,5 @@
+import { getError } from "../utils/errorManager.js";
+
 /**
  * @typedef {import("express").Request & {json: () => Promise<any>}} Request
  * @typedef {import("express").Response} Response
@@ -5,10 +7,8 @@
 
 const SERVER_ERROR = "Unknown Error";
 
-function error(res, message, status = 400){
-    res.status(status).json({
-        message
-    });
+function success(res, data, status = 200){
+    res.status(status).json({ data });
 }
 
 export default (service) => ({
@@ -20,22 +20,14 @@ export default (service) => ({
     createGroup: async (req, res) => {
         try{
             const body = await req.json();
-            if(body.name === undefined){
-                error(res, "Group name missing");
-            }
-            else if(body.description === undefined){
-                error(res, "Group description missing");
-            }
-            else if(body.teams === undefined){
-                error(res, "Team is missing")
-            }
-            else {
-                service.createGroup(body.name, body.description, body.teams)
-            }
+            if (!body.name)
+                getError(res, "w1");
+            else
+                success(res, await service.createGroup(body.name, body.description, body.teams), 201);
 
-        }catch(e){
+        } catch (e) {
             console.error(e);
-            error(res, SERVER_ERROR, 500);
+            getError(res);
         }
     },
 
