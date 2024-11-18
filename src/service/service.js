@@ -1,24 +1,19 @@
-import { getTeamsByName } from "../data/data-api.js";
-import { createGroup, createUser, deleteGroup, getGroupsByUser, updateGroup } from "../data/data-foccacia.js";
-
-const service = {
+export default (api, foccacia) => ({
     createGroup: (name, description, teams) => {
-        const equipas = teams.map(e => getTeamsByName(e)[0]);
+        const equipas = teams.map(e => api.getTeamsByName(e)[0]);
 
-        createGroup(name, description, equipas);
+        foccacia.createGroup(name, description, equipas);
     },
-    editGroup: (id, updates) => updateGroup(id, updates),    
-    listGroup: token => getGroupsByUser(token),
-    deleteGroup: id => deleteGroup(id),
+    editGroup: (id, updates) => foccacia.updateGroup(id, updates),    
+    listGroup: token => foccacia.getGroupsByUser(token),
+    deleteGroup: id => foccacia.deleteGroup(id),
     getDetailsOfGroup: (id, token) => {
-        getGroupsByUser(token)
+        foccacia.getGroupsByUser(token)
             .then(g => {
                 g.filter(group => group.id === id)
             })
     },
-    addTeamToGroup: (gid, tid) =>addTeamsToGroup(gid, tid),
-    removeTeamFromGroup: (id, idt) => removeTeamsFromGroup(id,idt),
-    createUser: name => createUser(name)
-}
-
-export default service;
+    addTeamToGroup: (gid, tid) => foccacia.addTeamsToGroup(gid, tid),
+    removeTeamFromGroup: (id, idt) => foccacia.removeTeamsFromGroup(id,idt),
+    createUser: name => foccacia.createUser(name)
+});
