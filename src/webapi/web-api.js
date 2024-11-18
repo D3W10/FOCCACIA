@@ -1,5 +1,10 @@
 import service from "../service/service.js";
 
+/**
+ * @typedef {import("express").Request & {json: () => Promise<any>}} Request
+ * @typedef {import("express").Response} Response
+ */
+
 const SERVER_ERROR = "Unknown Error";
 
 function error(res, message, status = 400){
