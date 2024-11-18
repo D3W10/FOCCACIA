@@ -36,7 +36,7 @@ const groups = [];
  * @param {Team[]} teams
  * @returns {Promise<Group>} The created group
  */
-export function createGroup(name, description = "", teams = []) {
+function createGroup(name, description = "", teams = []) {
     const group = {
         id: nextId++,
         name,
@@ -53,7 +53,7 @@ export function createGroup(name, description = "", teams = []) {
  * @param {User["token"]} token 
  * @returns {Promise<Group[]>}
  */
-export function getGroupsByUser(token) {
+function getGroupsByUser(token) {
     return Promise.resolve(groups.filter(g => g.token === token));
 }
 
@@ -63,7 +63,7 @@ export function getGroupsByUser(token) {
  * @param {Partial<Group>} changes
  * @returns {Promise<Group|undefined>} The updated group or undefined if not found
  */
-export function updateGroup(id, changes) {
+function updateGroup(id, changes) {
     const group = getGroupById(id);
     if (!group)
         return undefined;
@@ -77,7 +77,7 @@ export function updateGroup(id, changes) {
  * @param {Number} id
  * @returns {boolean} True if group was deleted, false if not found
  */
-export function deleteGroup(id) {
+function deleteGroup(id) {
     const index = groups.findIndex(g => g.id === id);
     if (index === -1) return false;
     
@@ -91,7 +91,7 @@ export function deleteGroup(id) {
  * @param {Number[]} teamIds
  * @returns {Promise<Group|undefined>}
  */
-export function addTeamsToGroup(groupId, teamIds) {
+function addTeamsToGroup(groupId, teamIds) {
     const group = getGroupById(groupId);
     if (!group) return undefined;
 
@@ -105,7 +105,7 @@ export function addTeamsToGroup(groupId, teamIds) {
  * @param {Number[]} teamIds
  * @returns {Promise<Group|undefined>}
  */
-export function removeTeamsFromGroup(groupId, teamIds) {
+function removeTeamsFromGroup(groupId, teamIds) {
     const group = getGroupById(groupId);
     if (!group) return undefined;
 
@@ -113,7 +113,7 @@ export function removeTeamsFromGroup(groupId, teamIds) {
     return Promise.resolve(group);
 }
 
-export function createUser(name) {
+function createUser(name) {
     users.push({
         id: nextId++,
         name,
@@ -121,4 +121,14 @@ export function createUser(name) {
     });
 
     return Promise.resolve();
+}
+
+export default {
+    createGroup,
+    getGroupsByUser,
+    updateGroup,
+    deleteGroup,
+    addTeamsToGroup,
+    removeTeamsFromGroup,
+    createUser
 }

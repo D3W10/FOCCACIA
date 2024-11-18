@@ -13,7 +13,7 @@ const API_KEY = "83a825990145b3950d8add20554c52e6";
  * @returns {Team[]}
  * @throws {TypeError}
  */
-export async function getTeamsByName(name) {
+async function getTeamsByName(name) {
     try {
         const response = await fetch(`${API_URL}/teams?name=${name}`, {
             method: "GET",
@@ -54,7 +54,7 @@ export async function getTeamsByName(name) {
  * @param {Number} id 
  * @throws {TypeError}
  */
-export async function getLeaguesByTeam(id) {
+async function getLeaguesByTeam(id) {
     try {
         const response = await fetch(`${API_URL}/leagues?team=${id}`, {
             method: "GET",
@@ -85,4 +85,9 @@ export async function getLeaguesByTeam(id) {
         else
             throw new Error(getError("UNKNOWN_ERROR"));
     }
+}
+
+export default {
+    getTeamsByName,
+    getLeaguesByTeam
 }
