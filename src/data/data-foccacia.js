@@ -33,6 +33,10 @@ function getUserByToken(token){
     return users.find(u => u.token === token);
 }
 
+function getGroupById(id) {
+    return groups.find(g => g.id === id);
+}
+
 function error(code){
     return Promise.reject({ code });
 }
@@ -64,11 +68,25 @@ function createGroup(name, description, teams, token) {
     return Promise.resolve(safeGroup);
 }
 
-function getGroupById(id) {
-    const group = groups.find(g => g.id === id);
+/**
+ * Updates a group
+ * @param {Number} id
+ * @param {Partial<Group>} changes
+ * @param {User["token"]} token
+ * @returns {Promise<Group>} The updated group
+ */
+function updateGroup(id, changes, token) {
+    const user = getUserByToken(token);
+    if (!user)
+        return error("d1");
+
+    const group = getGroupById(id);
     if (!group)
         return error("d2");
+    else if (group.userId !== user.id)
+        return error("w4");
 
+    Object.assign(group, changes);
     return Promise.resolve(group);
 }
 
@@ -78,22 +96,11 @@ function getGroupById(id) {
  * @returns {Promise<Group[]>}
  */
 function getGroupsByUser(token) {
-    return Promise.resolve(groups.filter(g => g.token === token));
-}
+    const user = getUserByToken(token);
+    if (!user)
+        return error("d1");
 
-/**
- * Updates a group
- * @param {Number} id
- * @param {Partial<Group>} changes
- * @returns {Promise<Group|undefined>} The updated group or undefined if not found
- */
-function updateGroup(id, changes) {
-    const group = getGroupById(id);
-    if (!group)
-        return undefined;
-
-    Object.assign(group, changes);
-    return Promise.resolve(group);
+    return Promise.resolve(groups.filter(g => g.userId === user.id));
 }
 
 /**

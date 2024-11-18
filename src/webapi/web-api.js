@@ -19,12 +19,15 @@ export default (service) => ({
      */
     createGroup: async (req, res) => {
         try{
+            const auth = req.headers.authorization;
             const body = await req.json();
+
             if (!body.name)
                 getError(res, "w1");
+            else if (!auth)
+                getError(res, "w3");
             else
-                success(res, await service.createGroup(body.name, body.description, body.teams), 201);
-
+                success(res, await service.createGroup(body.name, body.description, body.teams, auth.replace("Bearer ", "")), 201);
         } catch (e) {
             console.error(e);
             getError(res);
@@ -38,21 +41,21 @@ export default (service) => ({
      */
     editGroup: async (req, res) => {
         try{
+            const auth = req.headers.authorization;
             const body = await req.json();
 
-            if(body.name === undefined && body.description === undefined){
-                error(res, "No fields were specified");
-            }
-            else {
-                service.editGroup(req.params.id, {
+            if (!body.name && !body.description)
+                getError(res, "w2");
+            else if (!auth)
+                getError(res, "w3");
+            else
+                success(res, await service.editGroup(req.params.id, {
                     name: body.name,
                     description: body.description
-                })
-            }
-            
-        }catch(e){
+                }, auth.replace("Bearer ", "")))
+        } catch (e) {
             console.error(e);
-            error(res, SERVER_ERROR, 500);
+            getError(res);
         }
     },
 
@@ -64,16 +67,14 @@ export default (service) => ({
     listGroup: async (req, res) => {
         try{
             const auth = req.headers.authorization;
-            if(auth === null){
-                error(res, "Unauthorized", 401);
-            }
-            else{
-                service.listGroup(auth.replace("Bearer ", ""))
-            }
 
-        }catch(e){
+            if (!auth)
+                getError(res, "w3");
+            else
+                success(res, await service.listGroup(auth.replace("Bearer ", "")))
+        } catch (e) {
             console.error(e);
-            error(res, SERVER_ERROR, 500);
+            getError(res);
         }
     },
 

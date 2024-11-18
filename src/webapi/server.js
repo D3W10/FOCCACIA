@@ -12,13 +12,13 @@ app.use(express.json());
 const service = serviceBuilder(api, foccacia);
 const webApi = webApiBuilder(service);
 
-app.post("/groups", webApi.createGroup);
-app.put("/groups/:id", webApi.editGroup);
-app.get("/groups", webApi.listGroup);
-app.delete("/groups/:id", webApi.deleteGroup);
-app.get("/groups/:id", webApi.getDetailsOfGroup);
-app.post("/groups/:id/teams", webApi.addTeamToGroup);
-app.delete("/groups/:id/teams/:idt", webApi.removeTeamFromGroup);
-app.post("/user", webApi.createUser);
+app.post("api/groups", webApi.createGroup);
+app.put("api/groups/:id", webApi.editGroup);
+app.get("api/groups", webApi.listGroup);
+app.delete("api/groups/:id", webApi.deleteGroup);
+app.get("api/groups/:id", webApi.getDetailsOfGroup);
+app.post("api/groups/:id/teams", webApi.addTeamToGroup);
+app.delete("api/groups/:id/teams/:idt", webApi.removeTeamFromGroup);
+app.post("api/user", webApi.createUser);
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
