@@ -1,5 +1,3 @@
-import { getError } from "../utils/errorManager";
-
 /**
  * @typedef {import("./data-foccacia.js").Team} Team
  */
@@ -7,10 +5,14 @@ import { getError } from "../utils/errorManager";
 const API_URL = "https://v3.football.api-sports.io";
 const API_KEY = "83a825990145b3950d8add20554c52e6";
 
+function error(code){
+    return Promise.reject({ code });
+}
+
 /**
  * 
  * @param {String} name 
- * @returns {Team[]}
+ * @returns {Promise<Team[]>}
  * @throws {TypeError}
  */
 async function getTeamsByName(name) {
@@ -39,13 +41,11 @@ async function getTeamsByName(name) {
                 return [];
         }
         else
-            throw new Error(getError("EXTERNAL_ERROR"));
+            return error("a1");
     }
-    catch (error) {
-        if (error instanceof SyntaxError)
-            throw new Error(getError("JSON_PARSE_ERROR"));
-        else
-            throw new Error(getError("UNKNOWN_ERROR"));
+    catch (e) {
+        console.error(e);
+        return error("default");
     }
 }
 
@@ -77,13 +77,11 @@ async function getLeaguesByTeam(id) {
                 return [];
         }
         else
-            throw new Error(getError("EXTERNAL_ERROR"));
+            return error("a1");
     }
-    catch (error) {
-        if (error instanceof SyntaxError)
-            throw new Error(getError("JSON_PARSE_ERROR"));
-        else
-            throw new Error(getError("UNKNOWN_ERROR"));
+    catch (e) {
+        console.error(e);
+        return error("default");
     }
 }
 

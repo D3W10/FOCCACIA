@@ -1,19 +1,22 @@
 export default (api, foccacia) => ({
-    createGroup: (name, description = "", teamIds = [], token) => {
-        const teams = teamIds.map(e => api.getTeamsByName(e)[0]);
+    searchClubs: name => api.getClubsByName(name),
+    searchLeagues: team => api.getLeaguesByTeam(team),
+    createGroup: (name, description = "", teamNames = [], token) => {
+        const teams = teamNames.map(e => api.getTeamsByName(e)[0]);
 
         return foccacia.createGroup(name, description, teams, token);
     },
     editGroup: (id, updates, token) => foccacia.updateGroup(id, updates, token),    
     listGroup: token => foccacia.getGroupsByUser(token),
-    deleteGroup: id => foccacia.deleteGroup(id),
+    deleteGroup: (id, token) => foccacia.deleteGroup(id, token),
     getDetailsOfGroup: (id, token) => {
-        foccacia.getGroupsByUser(token)
-            .then(g => {
-                g.filter(group => group.id === id)
-            })
+        return foccacia.getGroupsByUser(token).then(g => g.filter(group => group.id === id))
     },
-    addTeamToGroup: (gid, tid) => foccacia.addTeamsToGroup(gid, tid),
-    removeTeamFromGroup: (id, idt) => foccacia.removeTeamsFromGroup(id,idt),
+    addTeamsToGroup: (gid, teamNames, token) => {
+        const teams = teamNames.map(e => api.getTeamsByName(e)[0]);
+
+        return foccacia.addTeamsToGroup(gid, teams, token);
+    },
+    removeTeamsFromGroup: (id, idt, token) => foccacia.removeTeamsFromGroup(id, [idt], token),
     createUser: name => foccacia.createUser(name)
 });

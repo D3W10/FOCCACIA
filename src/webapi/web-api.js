@@ -5,8 +5,6 @@ import { getError } from "../utils/errorManager.js";
  * @typedef {import("express").Response} Response
  */
 
-const SERVER_ERROR = "Unknown Error";
-
 function success(res, data, status = 200){
     res.status(status).json({ data });
 }
@@ -17,20 +15,72 @@ export default (service) => ({
      * @param {Request} req 
      * @param {Response} res 
      */
+    searchClubs: async (req, res) => {
+        try {
+            const name = req.query.name;
+
+            if (!name)
+                getError(res, "w7");
+            else
+                success(res, await service.searchClubs(name), 200);
+        } catch (e) {
+            if (e.code)
+                getError(res, e.code);
+            else {
+                console.error(e);
+                getError(res);
+            }
+        }
+    },
+
+    /**
+     * 
+     * @param {Request} req 
+     * @param {Response} res 
+     */
+    searchLeagues: async (req, res) => {
+        try {
+            const team = req.query.team;
+
+            if (!team)
+                getError(res, "w8");
+            else
+                success(res, await service.searchLeagues(team), 200);
+        } catch (e) {
+            if (e.code)
+                getError(res, e.code);
+            else {
+                console.error(e);
+                getError(res);
+            }
+        }
+    },
+
+    /**
+     * 
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     createGroup: async (req, res) => {
-        try{
-            const auth = req.headers.authorization;
+        try {
             const body = await req.json();
+            const auth = req.headers.authorization;
 
             if (!body.name)
                 getError(res, "w1");
+            else if (!body.teams || !Array.isArray(body.teams))
+                getError(res, "w9");
             else if (!auth)
                 getError(res, "w3");
             else
                 success(res, await service.createGroup(body.name, body.description, body.teams, auth.replace("Bearer ", "")), 201);
         } catch (e) {
-            console.error(e);
-            getError(res);
+            if (e.code)
+                getError(res, e.code);
+            else {
+                console.error(e);
+                getError(res);
+            }
         }
     },
 
@@ -40,22 +90,29 @@ export default (service) => ({
      * @param {Response} res 
      */
     editGroup: async (req, res) => {
-        try{
-            const auth = req.headers.authorization;
+        try {
             const body = await req.json();
+            const auth = req.headers.authorization;
+            const id = +req.params.id;
 
             if (!body.name && !body.description)
                 getError(res, "w2");
             else if (!auth)
                 getError(res, "w3");
+            else if (isNaN(id))
+                getError(res, "w5");
             else
                 success(res, await service.editGroup(req.params.id, {
                     name: body.name,
                     description: body.description
-                }, auth.replace("Bearer ", "")))
+                }, auth.replace("Bearer ", "")));
         } catch (e) {
-            console.error(e);
-            getError(res);
+            if (e.code)
+                getError(res, e.code);
+            else {
+                console.error(e);
+                getError(res);
+            }
         }
     },
 
@@ -65,16 +122,20 @@ export default (service) => ({
      * @param {Response} res 
      */
     listGroup: async (req, res) => {
-        try{
+        try {
             const auth = req.headers.authorization;
 
             if (!auth)
                 getError(res, "w3");
             else
-                success(res, await service.listGroup(auth.replace("Bearer ", "")))
+                success(res, await service.listGroup(auth.replace("Bearer ", "")));
         } catch (e) {
-            console.error(e);
-            getError(res);
+            if (e.code)
+                getError(res, e.code);
+            else {
+                console.error(e);
+                getError(res);
+            }
         }
     },
 
@@ -84,17 +145,25 @@ export default (service) => ({
      * @param {Response} res 
      */
     deleteGroup: async (req, res) => {
-        try{
+        try {
+            const auth = req.headers.authorization;
             const id = +req.params.id;
-            if(isNaN(id)){
-                error(res, "Invalid Group ID")
+
+            if (!auth)
+                getError(res, "w3");
+            else if (isNaN(id))
+                getError(res, "w5");
+            else {
+                await service.deleteGroup(id);
+                success(res, "Group deleted successfully");
             }
-            else{
-                service.deleteGroup(id)
+        } catch (e) {
+            if (e.code)
+                getError(res, e.code);
+            else {
+                console.error(e);
+                getError(res);
             }
-        }catch(e){
-            console.error(e);
-            error(res, SERVER_ERROR, 500);
         }
     },
 
@@ -105,53 +174,53 @@ export default (service) => ({
      */
     getDetailsOfGroup: async (req, res) => {
         try {
-            const id = +req.params.id
             const auth = req.headers.authorization;
-            if(auth === null){
-                error(res, "Unauthorized", 401);
+            const id = +req.params.id;
+
+            if (!auth)
+                getError(res, "w3");
+            else if (isNaN(id))
+                getError(res, "w5");
+            else
+                success(res, await service.getDetailsOfGroup(auth.replace("Bearer ", "")));
+        } catch (e) {
+            if (e.code)
+                getError(res, e.code);
+            else {
+                console.error(e);
+                getError(res);
             }
-            else if(isNaN(id)){
-                error(res, "Invalid Group ID")
-            }
-            else{
-                service.getDetailsOfGroup(id, token)
+        }
+    },
+
+    /**
+     * 
+     * @param {Request} req 
+     * @param {Response} res 
+     */
+    addTeamsToGroup: async (req, res) => {
+        try {
+            const auth = req.headers.authorization;
+            const id = +req.params.id;
+            const body = await req.json();
+
+            if (!body.teams || !Array.isArray(body.teams))
+                getError(res, "w9");
+            else if (!auth)
+                getError(res, "w3");
+            else if (isNaN(id))
+                getError(res, "w5");
+            else {
+                service.addTeamsToGroup(id, body.teams, auth.replace("Bearer ", ""));
+                success(res, "Teams added to group successfully", 200);
             }
         } catch (e) {
-            console.error(e);
-            error(res, SERVER_ERROR, 500);
-        }
-    },
-
-    /**
-     * 
-     * @param {Request} req 
-     * @param {Response} res 
-     */
-    addTeamToGroup: async (req, res) => {
-        try{
-            const body = await req.json();
-            const gid = +req.params.id
-            
-            if(isNaN(gid)){
-                error(res, "Invalid Group ID")
-            }
-            else if(body.teamId === undefined){
-                error(res, "Team Id is missing");
-            }
-            else if(body.leagueId  === undefined){
-                error(res, "League Id is missing");
-            }
-            else if(body.season  === undefined){
-                error(res, "Season is missing");
-            }
+            if (e.code)
+                getError(res, e.code);
             else {
-                service.addTeamToGroup(gid, [body.teamId]);
+                console.error(e);
+                getError(res);
             }
-
-
-        }catch(e){
-            console.error(e);
-            error(res, SERVER_ERROR, 500);
         }
     },
 
@@ -160,23 +229,27 @@ export default (service) => ({
      * @param {Request} req 
      * @param {Response} res 
      */
-    removeTeamFromGroup: async (req, res) => {
-        try{
-            const gid = +req.params.id
-            const tid = +req.params.idt
+    removeTeamsFromGroup: async (req, res) => {
+        try {
+            const auth = req.headers.authorization;
+            const id = +req.params.id
+            const idt = +req.params.idt
 
-            if(isNaN(id)){
-                error(res, "Invalid Group ID")
+            if (!auth)
+                getError(res, "w3");
+            else if (isNaN(id) || isNaN(idt))
+                getError(res, "w5");
+            else {
+                await service.removeTeamsFromGroup(id, idt, auth.replace("Bearer ", ""));
+                success(res, "Team removed from group successfully");
             }
-            else if(isNaN(tid)){
-                error(res, "Invalid Team ID")
+        } catch (e) {
+            if (e.code)
+                getError(res, e.code);
+            else {
+                console.error(e);
+                getError(res);
             }
-            else{
-                service.removeTeamFromGroup(id, [idt])
-            }
-        }catch(e){
-            console.error(e);
-            error(res, SERVER_ERROR, 500);
         }
     },
 
@@ -186,19 +259,22 @@ export default (service) => ({
      * @param {Response} res 
      */
     createUser: async (req, res) => {
-        try{
+        try {
             const body = await req.json();
 
-            if(body.name === undefined){
-                error(res, "Name is missing");
+            if (!body.name)
+                getError(res, "w6");
+            else {
+                await service.createUser(body.name);
+                success(res, "User created successfully", 201);
             }
-            else{
-                service.createUser(body.name);
+        } catch (e) {
+            if (e.code)
+                getError(res, e.code);
+            else {
+                console.error(e);
+                getError(res);
             }
-
-        }catch(e){
-            console.error(e);
-            error(res, SERVER_ERROR, 500);
         }
     }
 });

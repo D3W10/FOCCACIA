@@ -106,45 +106,79 @@ function getGroupsByUser(token) {
 /**
  * Deletes a group
  * @param {Number} id
- * @returns {boolean} True if group was deleted, false if not found
+ * @param {User["token"]} token 
+ * @returns {Promise<void>}
  */
-function deleteGroup(id) {
-    const index = groups.findIndex(g => g.id === id);
-    if (index === -1) return false;
-    
-    groups.splice(index, 1);
-    return Promise.resolve(true);
+function deleteGroup(id, token) {
+    const user = getUserByToken(token);
+    if (!user)
+        return error("d1");
+
+    const group = getGroupById(id);
+    if (!group)
+        return error("d2");
+    else if (group.userId !== user.id)
+        return error("w4");
+
+    groups.splice(groups.findIndex(g => g.id === id), 1);
+    return Promise.resolve();
 }
 
 /**
  * Adds teams to a group
  * @param {Number} groupId
- * @param {Number[]} teamIds
- * @returns {Promise<Group|undefined>}
+ * @param {Team[]} teams
+ * @param {User["token"]} token
+ * @returns {Promise<void>}
  */
-function addTeamsToGroup(groupId, teamIds) {
-    const group = getGroupById(groupId);
-    if (!group) return undefined;
+function addTeamsToGroup(groupId, teams, token) {
+    const user = getUserByToken(token);
+    if (!user)
+        return error("d1");
 
-    group.teamIds = [...new Set([...group.teamIds, ...teamIds])];
-    return Promise.resolve(group);
+    const group = getGroupById(groupId);
+    if (!group)
+        return error("d2");
+    else if (group.userId !== user.id)
+        return error("w4");
+
+    group.teams = [...new Set([...group.teams, ...teams])];
+
+    return Promise.resolve();
 }
 
 /**
  * Removes teams from a group
  * @param {Number} groupId
- * @param {Number[]} teamIds
- * @returns {Promise<Group|undefined>}
+ * @param {Team[]} teams
+ * @param {User["token"]} token
+ * @returns {Promise<void>}
  */
-function removeTeamsFromGroup(groupId, teamIds) {
-    const group = getGroupById(groupId);
-    if (!group) return undefined;
+function removeTeamsFromGroup(groupId, teams, token) {
+    const user = getUserByToken(token);
+    if (!user)
+        return error("d1");
 
-    group.teamIds = group.teamIds.filter(id => !teamIds.includes(id));
-    return Promise.resolve(group);
+    const group = getGroupById(groupId);
+    if (!group)
+        return error("d2");
+    else if (group.userId !== user.id)
+        return error("w4");
+
+    group.teams = group.teams.filter(t => !teams.map(o => o.id).includes(t.id));
+
+    return Promise.resolve();
 }
 
+/**
+ * Creates a new user
+ * @param {String} name
+ * @returns {Promise<void>}
+ */
 function createUser(name) {
+    if (!name)
+        return error("w6");
+
     users.push({
         id: nextId++,
         name,
