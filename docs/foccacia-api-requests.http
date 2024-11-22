@@ -1,21 +1,72 @@
- 
-GET http://localhost:8080/tasks
+#######################################################################################################
+GET http://localhost:8080/api/clubs?name=Benfica
+//Search clubs by name
 
-###
+#######################################################################################################
+GET http://localhost:8080/api/leagues?team=Benfica
+//Search all leagues by team
+// TODO FIX
 
-GET http://localhost:8080/tasks/1
-###
-GET http://localhost:8080/tasks/2
-
-###
-
-POST http://localhost:8080/tasks
+#######################################################################################################
+POST http://localhost:8080/api/groups
 Content-Type: application/json
 
 {
-    "name" : "Name group",
-    "description": "",
-    "teams": [
-        "Benfica"
-    ]
+    "name" : "Group Name",
+    "description": "Group Description",
 }
+//Create group providing its name and description
+
+#######################################################################################################
+PUT http://localhost:8080/api/groups/1
+Content-Type: application/json
+
+{
+    "name" : "Best Teams",
+    "description": "As melhores equipas"
+}
+//Edit group by changing its name and description
+
+#######################################################################################################
+GET http://localhost:8080/api/groups
+//List all groups
+
+#######################################################################################################
+DELETE http://localhost:8080/api/groups/1
+//id grupo 1
+//Delete a group
+
+#######################################################################################################
+GET http://localhost:8080/api/groups/1
+//Get the details of a group, with its name and description and the list of its
+//teams with Team and Stadium names, league name and Season
+
+#######################################################################################################
+POST http://localhost:8080/api/groups/1/teams
+Content-Type: application/json
+
+{
+    "league" : "Liga Betclic",
+    "season": "23/24"
+}
+//grupo id1
+//Add a team, in a given league and season for a group (with this operation, the 
+//teamId, leagueId and season must be stored in the local data)
+
+#######################################################################################################
+DELETE http://localhost:8080/api/groups/1/teams/211 
+//1id = grupo; 2id = equipa
+//id do benfica ?
+//Remove a team from a group
+
+#######################################################################################################
+POST http://localhost:8080/api/user
+Content-Type: application/json
+
+{
+    "username" : "BigBoy"
+}
+//TODO fix later
+//Create new user
+
+#######################################################################################################
