@@ -5,7 +5,7 @@
     "author": "G06",
     "scripts": {
         "start": "node .",
-        "nodemon": "nodemon .",
+        "nodemon": "nodemon",
         "test": "mocha --recursive"
     },
     "main": "src/webapi/server.js",

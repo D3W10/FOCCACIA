@@ -2,11 +2,10 @@
  * @typedef {Object} Team
  * @property {Number} id
  * @property {String} name
- * @property {String} country
- * @property {Number} founded
- * @property {String} logo
+ * @property {Number} leagueId
+ * @property {String} league
+ * @property {Number} season
  * @property {String} stadium
- * @property {String} city
  *
  * @typedef {Object} Group
  * @property {Number} id
@@ -21,7 +20,8 @@
  * @property {String} token
  */
 
-let nextId = 1;
+let nextUserId = 1;
+let nextGroupId = 1;
 
 /** @type {User[]} */
 const users = [];
@@ -29,16 +29,22 @@ const users = [];
 /** @type {Group[]} */
 const groups = [];
 
+/**
+ * Obtains the user with a specific token
+ * @param {String} token
+ * @returns {Promise<User | undefined>}
+ */
 function getUserByToken(token){
-    return users.find(u => u.token === token);
+    return Promise.resolve(users.find(u => u.token === token));
 }
 
+/**
+ * Obtains the group with a specific id
+ * @param {Number} id 
+ * @returns {Promise<Group | undefined>}
+ */
 function getGroupById(id) {
-    return groups.find(g => g.id === id);
-}
-
-function error(code){
-    return Promise.reject({ code });
+    return Promise.resolve(groups.find(g => g.id === id));
 }
 
 /**
@@ -46,19 +52,15 @@ function error(code){
  * @param {String} name
  * @param {String} description
  * @param {Team[]} teams
- * @param {User["token"]} token
- * @returns {Promise<Omit<Group, "userId">>} The created group
+ * @param {User["id"]} user
+ * @returns {Promise<Omit<Group, "userId">>}
  */
-function createGroup(name, description, teams, token) {
-    const user = getUserByToken(token);
-    if (!user)
-        return error("d1");
-
+function createGroup(name, description, teams, user) {
     const group = {
-        id: nextId++,
+        id: nextGroupId++,
         name,
         description: description || "",
-        userId: user.id,
+        userId: user,
         teams: teams || []
     };
 
@@ -72,100 +74,62 @@ function createGroup(name, description, teams, token) {
  * Updates a group
  * @param {Number} id
  * @param {Partial<Group>} changes
- * @param {User["token"]} token
- * @returns {Promise<Group>} The updated group
+ * @returns {Promise<Omit<Group, "userId">>}
  */
-function updateGroup(id, changes, token) {
-    const user = getUserByToken(token);
-    if (!user)
-        return error("d1");
+function updateGroup(id, changes) {
+    const group = groups.find(g => g.id === id);
 
-    const group = getGroupById(id);
-    if (!group)
-        return error("d2");
-    else if (group.userId !== user.id)
-        return error("w4");
+    Object.assign(group, Object.fromEntries(
+        Object.entries(changes).filter(([_, value]) => value !== undefined)
+    ));
 
-    Object.assign(group, changes);
-    return Promise.resolve(group);
+    const { userId, ...safeGroup } = group;
+    return Promise.resolve(safeGroup);
 }
 
 /**
  * Gets all the groups from a user
- * @param {User["token"]} token 
+ * @param {User["id"]} user 
  * @returns {Promise<Group[]>}
  */
-function getGroupsByUser(token) {
-    const user = getUserByToken(token);
-    if (!user)
-        return error("d1");
-
-    return Promise.resolve(groups.filter(g => g.userId === user.id));
+function getGroupsByUser(user) {
+    return Promise.resolve(groups.filter(g => g.userId === user));
 }
 
 /**
  * Deletes a group
  * @param {Number} id
- * @param {User["token"]} token 
  * @returns {Promise<void>}
  */
-function deleteGroup(id, token) {
-    const user = getUserByToken(token);
-    if (!user)
-        return error("d1");
-
-    const group = getGroupById(id);
-    if (!group)
-        return error("d2");
-    else if (group.userId !== user.id)
-        return error("w4");
-
+function deleteGroup(id) {
     groups.splice(groups.findIndex(g => g.id === id), 1);
     return Promise.resolve();
 }
 
 /**
  * Adds teams to a group
- * @param {Number} groupId
+ * @param {Number} id
  * @param {Team[]} teams
- * @param {User["token"]} token
  * @returns {Promise<void>}
  */
-function addTeamsToGroup(groupId, teams, token) {
-    const user = getUserByToken(token);
-    if (!user)
-        return error("d1");
-
-    const group = getGroupById(groupId);
-    if (!group)
-        return error("d2");
-    else if (group.userId !== user.id)
-        return error("w4");
-
+function addTeamsToGroup(id, teams) {
+    const group = groups.find(g => g.id === id);
     group.teams = [...new Set([...group.teams, ...teams])];
 
     return Promise.resolve();
 }
 
 /**
- * Removes teams from a group
- * @param {Number} groupId
- * @param {Team[]} teams
- * @param {User["token"]} token
+ * Remove a team from a group
+ * @param {Number} id
+ * @param {Number} idt
+ * @param {Number} idl
+ * @param {Number} season
  * @returns {Promise<void>}
  */
-function removeTeamsFromGroup(groupId, teams, token) {
-    const user = getUserByToken(token);
-    if (!user)
-        return error("d1");
-
-    const group = getGroupById(groupId);
-    if (!group)
-        return error("d2");
-    else if (group.userId !== user.id)
-        return error("w4");
-
-    group.teams = group.teams.filter(t => !teams.map(o => o.id).includes(t.id));
+function removeTeamsFromGroup(id, idt, idl, season) {
+    const group = groups.find(g => g.id === id);
+    group.teams.filter(t => t.id === idt && t.leagueId === idl && t.season === season);
 
     return Promise.resolve();
 }
@@ -173,25 +137,25 @@ function removeTeamsFromGroup(groupId, teams, token) {
 /**
  * Creates a new user
  * @param {String} name
- * @returns {Promise<void>}
+ * @returns {Promise<User>}
  */
 function createUser(name) {
-    if (!name)
-        return error("w6");
-
-    users.push({
-        id: nextId++,
+    const newUser = {
+        id: nextUserId++,
         name,
         token: crypto.randomUUID()
-    });
+    };
 
-    return Promise.resolve();
+    users.push(newUser);
+    return Promise.resolve(newUser);
 }
 
 export default {
+    getUserByToken,
+    getGroupById,
     createGroup,
-    getGroupsByUser,
     updateGroup,
+    getGroupsByUser,
     deleteGroup,
     addTeamsToGroup,
     removeTeamsFromGroup,

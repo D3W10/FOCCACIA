@@ -1,72 +1,138 @@
-#######################################################################################################
+### Search Clubs
+
 GET http://localhost:8080/api/clubs?name=Benfica
-//Search clubs by name
 
-#######################################################################################################
-GET http://localhost:8080/api/leagues?team=Benfica
-//Search all leagues by team
-// TODO FIX
 
-#######################################################################################################
+
+
+
+### Search Leagues
+
+GET http://localhost:8080/api/leagues?team=211
+
+
+
+
+
+### Create Group
+
 POST http://localhost:8080/api/groups
 Content-Type: application/json
+Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
 
 {
-    "name" : "Group Name",
-    "description": "Group Description",
+    "name" : "Awesome Group",
+    "description": "This is the best group ever!"
 }
-//Create group providing its name and description
 
-#######################################################################################################
+###
+
+POST http://localhost:8080/api/groups
+Content-Type: application/json
+Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
+
+{
+    "name" : "Awesome Group 2",
+    "description": "This is the second best group ever!",
+    "teams": [
+        {
+            "id": 211,
+            "leagueId": 94,
+            "season": 2022
+        }
+    ]
+}
+
+
+
+
+
+### Edit Group
+
 PUT http://localhost:8080/api/groups/1
 Content-Type: application/json
+Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
 
 {
-    "name" : "Best Teams",
-    "description": "As melhores equipas"
+    "name" : "Updated Awesome Group",
+    "description": "The best group is even better!"
 }
-//Edit group by changing its name and description
 
-#######################################################################################################
+###
+
+PUT http://localhost:8080/api/groups/1
+Content-Type: application/json
+Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
+
+{
+    "name" : "Awesome Group Again"
+}
+
+
+
+
+
+### List Group
+
 GET http://localhost:8080/api/groups
-//List all groups
+Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
 
-#######################################################################################################
+
+
+
+
+### Delete Group
+
 DELETE http://localhost:8080/api/groups/1
-//id grupo 1
-//Delete a group
+Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
 
-#######################################################################################################
+
+
+
+
+### Get Group Details
+
 GET http://localhost:8080/api/groups/1
-//Get the details of a group, with its name and description and the list of its
-//teams with Team and Stadium names, league name and Season
+Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
 
-#######################################################################################################
+// TODO Unnexpected result
+
+
+
+### Add Teams to Group
+
 POST http://localhost:8080/api/groups/1/teams
 Content-Type: application/json
+Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
 
 {
-    "league" : "Liga Betclic",
-    "season": "23/24"
+    "teams": [
+        {
+            "id": 211,
+            "leagueId": 3,
+            "season": 2019
+        }
+    ]
 }
-//grupo id1
-//Add a team, in a given league and season for a group (with this operation, the 
-//teamId, leagueId and season must be stored in the local data)
 
-#######################################################################################################
-DELETE http://localhost:8080/api/groups/1/teams/211 
-//1id = grupo; 2id = equipa
-//id do benfica ?
-//Remove a team from a group
 
-#######################################################################################################
-POST http://localhost:8080/api/user
+
+
+
+### Remove Team from Group
+
+DELETE http://localhost:8080/api/groups/1/teams/211/leagues/3/seasons/2019
+Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
+
+// TODO Unnexpected result
+
+
+
+### Create User
+
+POST http://localhost:8080/api/users
 Content-Type: application/json
 
 {
-    "username" : "BigBoy"
+    "name" : "Alice"
 }
-//TODO fix later
-//Create new user
-
-#######################################################################################################
