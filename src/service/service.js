@@ -1,5 +1,5 @@
 export default (api, foccacia) => ({
-    searchClubs: name => api.getClubsByName(name),
+    searchClubs: name => api.getTeamsByName(name),
     searchLeagues: team => api.getLeaguesByTeam(team),
     createGroup: (name, description = "", teamNames = [], token) => {
         const teams = teamNames.map(e => api.getTeamsByName(e)[0]);
