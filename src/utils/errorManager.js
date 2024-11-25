@@ -18,6 +18,7 @@ const errors = {
     w7: { status: 400, message: "Club name missing" },
     w8: { status: 400, message: "Team name missing" },
     w9: { status: 400, message: "Invalid teams array" },
+    w10: { status: 401, message: "Invalid authentication header" },
     d1: { status: 404, message: "User not found" },
     d2: { status: 404, message: "Group not found" },
     a1: { status: 502, message: "External API error" }

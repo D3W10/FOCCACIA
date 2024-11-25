@@ -9,6 +9,17 @@ function success(res, data, status = 200){
     res.status(status).json({ data });
 }
 
+function getAuth(req) {
+    const auth = req.headers.authorization.split(" ", 2);
+
+    if (auth.length < 2)
+        Promise.reject(new Error("w10"));
+    else if (auth[0] !== "Bearer")
+        Promise.reject(new Error("w10"));
+    else
+        return auth[1];
+}
+
 export default (service) => ({
     /**
      * 
@@ -64,16 +75,15 @@ export default (service) => ({
     createGroup: async (req, res) => {
         try {
             const body = await req.json();
-            const auth = req.headers.authorization;
 
             if (!body.name)
                 getError(res, "w1");
             else if (!body.teams || !Array.isArray(body.teams))
                 getError(res, "w9");
-            else if (!auth)
+            else if (!req.headers.authorization)
                 getError(res, "w3");
             else
-                success(res, await service.createGroup(body.name, body.description, body.teams, auth.replace("Bearer ", "")), 201);
+                success(res, await service.createGroup(body.name, body.description, body.teams, getAuth(req)), 201);
         } catch (e) {
             if (e.code)
                 getError(res, e.code);
@@ -92,12 +102,11 @@ export default (service) => ({
     editGroup: async (req, res) => {
         try {
             const body = await req.json();
-            const auth = req.headers.authorization;
             const id = +req.params.id;
 
             if (!body.name && !body.description)
                 getError(res, "w2");
-            else if (!auth)
+            else if (!req.headers.authorization)
                 getError(res, "w3");
             else if (isNaN(id))
                 getError(res, "w5");
@@ -105,7 +114,7 @@ export default (service) => ({
                 success(res, await service.editGroup(req.params.id, {
                     name: body.name,
                     description: body.description
-                }, auth.replace("Bearer ", "")));
+                }, getAuth(req)));
         } catch (e) {
             if (e.code)
                 getError(res, e.code);
@@ -123,12 +132,10 @@ export default (service) => ({
      */
     listGroup: async (req, res) => {
         try {
-            const auth = req.headers.authorization;
-
-            if (!auth)
+            if (!req.headers.authorization)
                 getError(res, "w3");
             else
-                success(res, await service.listGroup(auth.replace("Bearer ", "")));
+                success(res, await service.listGroup(getAuth(req)));
         } catch (e) {
             if (e.code)
                 getError(res, e.code);
@@ -146,15 +153,14 @@ export default (service) => ({
      */
     deleteGroup: async (req, res) => {
         try {
-            const auth = req.headers.authorization;
             const id = +req.params.id;
 
-            if (!auth)
+            if (!req.headers.authorization)
                 getError(res, "w3");
             else if (isNaN(id))
                 getError(res, "w5");
             else {
-                await service.deleteGroup(id);
+                await service.deleteGroup(id, getAuth(req));
                 success(res, "Group deleted successfully");
             }
         } catch (e) {
@@ -174,15 +180,14 @@ export default (service) => ({
      */
     getDetailsOfGroup: async (req, res) => {
         try {
-            const auth = req.headers.authorization;
             const id = +req.params.id;
 
-            if (!auth)
+            if (!req.headers.authorization)
                 getError(res, "w3");
             else if (isNaN(id))
                 getError(res, "w5");
             else
-                success(res, await service.getDetailsOfGroup(auth.replace("Bearer ", "")));
+                success(res, await service.getDetailsOfGroup(id, getAuth(req)));
         } catch (e) {
             if (e.code)
                 getError(res, e.code);
@@ -200,18 +205,17 @@ export default (service) => ({
      */
     addTeamsToGroup: async (req, res) => {
         try {
-            const auth = req.headers.authorization;
             const id = +req.params.id;
             const body = await req.json();
 
             if (!body.teams || !Array.isArray(body.teams))
                 getError(res, "w9");
-            else if (!auth)
+            else if (!req.headers.authorization)
                 getError(res, "w3");
             else if (isNaN(id))
                 getError(res, "w5");
             else {
-                service.addTeamsToGroup(id, body.teams, auth.replace("Bearer ", ""));
+                await service.addTeamsToGroup(id, body.teams, getAuth(req));
                 success(res, "Teams added to group successfully", 200);
             }
         } catch (e) {
@@ -231,16 +235,15 @@ export default (service) => ({
      */
     removeTeamsFromGroup: async (req, res) => {
         try {
-            const auth = req.headers.authorization;
             const id = +req.params.id
             const idt = +req.params.idt
 
-            if (!auth)
+            if (!req.headers.authorization)
                 getError(res, "w3");
             else if (isNaN(id) || isNaN(idt))
                 getError(res, "w5");
             else {
-                await service.removeTeamsFromGroup(id, idt, auth.replace("Bearer ", ""));
+                await service.removeTeamsFromGroup(id, idt, getAuth(req));
                 success(res, "Team removed from group successfully");
             }
         } catch (e) {
