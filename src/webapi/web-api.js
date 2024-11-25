@@ -20,28 +20,35 @@ function getAuth(req) {
         return auth[1];
 }
 
+function handleError(res, tryFunc) {
+    try {
+        tryFunc();
+    }
+    catch (e) {
+        if (e.code)
+            getError(res, e.code);
+        else {
+            console.error(e);
+            getError(res);
+        }
+    }
+}
+
 export default (service) => ({
     /**
      * 
      * @param {Request} req 
      * @param {Response} res 
      */
-    searchClubs: async (req, res) => {
-        try {
+    searchClubs: (req, res) => {
+        handleError(res, async () => {
             const name = req.query.name;
 
             if (!name)
                 getError(res, "w7");
             else
                 success(res, await service.searchClubs(name), 200);
-        } catch (e) {
-            if (e.code)
-                getError(res, e.code);
-            else {
-                console.error(e);
-                getError(res);
-            }
-        }
+        });
     },
 
     /**
@@ -49,22 +56,15 @@ export default (service) => ({
      * @param {Request} req 
      * @param {Response} res 
      */
-    searchLeagues: async (req, res) => {
-        try {
+    searchLeagues: (req, res) => {
+        handleError(res, async () => {
             const team = req.query.team;
 
             if (!team)
                 getError(res, "w8");
             else
                 success(res, await service.searchLeagues(team), 200);
-        } catch (e) {
-            if (e.code)
-                getError(res, e.code);
-            else {
-                console.error(e);
-                getError(res);
-            }
-        }
+        });
     },
 
     /**
@@ -72,8 +72,8 @@ export default (service) => ({
      * @param {Request} req 
      * @param {Response} res 
      */
-    createGroup: async (req, res) => {
-        try {
+    createGroup: (req, res) => {
+        handleError(res, async () => {
             const body = await req.json();
 
             if (!body.name)
@@ -84,14 +84,7 @@ export default (service) => ({
                 getError(res, "w3");
             else
                 success(res, await service.createGroup(body.name, body.description, body.teams, getAuth(req)), 201);
-        } catch (e) {
-            if (e.code)
-                getError(res, e.code);
-            else {
-                console.error(e);
-                getError(res);
-            }
-        }
+        });
     },
 
     /**
@@ -99,8 +92,8 @@ export default (service) => ({
      * @param {Request} req 
      * @param {Response} res 
      */
-    editGroup: async (req, res) => {
-        try {
+    editGroup: (req, res) => {
+        handleError(res, async () => {
             const body = await req.json();
             const id = +req.params.id;
 
@@ -115,14 +108,7 @@ export default (service) => ({
                     name: body.name,
                     description: body.description
                 }, getAuth(req)));
-        } catch (e) {
-            if (e.code)
-                getError(res, e.code);
-            else {
-                console.error(e);
-                getError(res);
-            }
-        }
+        });
     },
 
     /**
@@ -130,20 +116,13 @@ export default (service) => ({
      * @param {Request} req 
      * @param {Response} res 
      */
-    listGroup: async (req, res) => {
-        try {
+    listGroup: (req, res) => {
+        handleError(res, async () => {
             if (!req.headers.authorization)
                 getError(res, "w3");
             else
                 success(res, await service.listGroup(getAuth(req)));
-        } catch (e) {
-            if (e.code)
-                getError(res, e.code);
-            else {
-                console.error(e);
-                getError(res);
-            }
-        }
+        });
     },
 
     /**
@@ -151,8 +130,8 @@ export default (service) => ({
      * @param {Request} req 
      * @param {Response} res 
      */
-    deleteGroup: async (req, res) => {
-        try {
+    deleteGroup: (req, res) => {
+        handleError(res, async () => {
             const id = +req.params.id;
 
             if (!req.headers.authorization)
@@ -163,14 +142,7 @@ export default (service) => ({
                 await service.deleteGroup(id, getAuth(req));
                 success(res, "Group deleted successfully");
             }
-        } catch (e) {
-            if (e.code)
-                getError(res, e.code);
-            else {
-                console.error(e);
-                getError(res);
-            }
-        }
+        });
     },
 
     /**
@@ -178,8 +150,8 @@ export default (service) => ({
      * @param {Request} req 
      * @param {Response} res 
      */
-    getDetailsOfGroup: async (req, res) => {
-        try {
+    getDetailsOfGroup: (req, res) => {
+        handleError(res, async () => {
             const id = +req.params.id;
 
             if (!req.headers.authorization)
@@ -188,14 +160,7 @@ export default (service) => ({
                 getError(res, "w5");
             else
                 success(res, await service.getDetailsOfGroup(id, getAuth(req)));
-        } catch (e) {
-            if (e.code)
-                getError(res, e.code);
-            else {
-                console.error(e);
-                getError(res);
-            }
-        }
+        });
     },
 
     /**
@@ -203,8 +168,8 @@ export default (service) => ({
      * @param {Request} req 
      * @param {Response} res 
      */
-    addTeamsToGroup: async (req, res) => {
-        try {
+    addTeamsToGroup: (req, res) => {
+        handleError(res, async () => {
             const id = +req.params.id;
             const body = await req.json();
 
@@ -218,14 +183,7 @@ export default (service) => ({
                 await service.addTeamsToGroup(id, body.teams, getAuth(req));
                 success(res, "Teams added to group successfully", 200);
             }
-        } catch (e) {
-            if (e.code)
-                getError(res, e.code);
-            else {
-                console.error(e);
-                getError(res);
-            }
-        }
+        });
     },
 
     /**
@@ -233,8 +191,8 @@ export default (service) => ({
      * @param {Request} req 
      * @param {Response} res 
      */
-    removeTeamsFromGroup: async (req, res) => {
-        try {
+    removeTeamsFromGroup: (req, res) => {
+        handleError(res, async () => {
             const id = +req.params.id
             const idt = +req.params.idt
 
@@ -246,14 +204,7 @@ export default (service) => ({
                 await service.removeTeamsFromGroup(id, idt, getAuth(req));
                 success(res, "Team removed from group successfully");
             }
-        } catch (e) {
-            if (e.code)
-                getError(res, e.code);
-            else {
-                console.error(e);
-                getError(res);
-            }
-        }
+        });
     },
 
     /**
@@ -261,8 +212,8 @@ export default (service) => ({
      * @param {Request} req 
      * @param {Response} res 
      */
-    createUser: async (req, res) => {
-        try {
+    createUser: (req, res) => {
+        handleError(res, async () => {
             const body = await req.json();
 
             if (!body.name)
@@ -271,13 +222,6 @@ export default (service) => ({
                 await service.createUser(body.name);
                 success(res, "User created successfully", 201);
             }
-        } catch (e) {
-            if (e.code)
-                getError(res, e.code);
-            else {
-                console.error(e);
-                getError(res);
-            }
-        }
+        });
     }
 });
