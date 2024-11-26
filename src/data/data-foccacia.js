@@ -129,7 +129,7 @@ function addTeamsToGroup(id, teams) {
  */
 function removeTeamsFromGroup(id, idt, idl, season) {
     const group = groups.find(g => g.id === id);
-    group.teams.filter(t => t.id === idt && t.leagueId === idl && t.season === season);
+    group.teams = group.teams.filter(t => t.id !== idt || t.leagueId !== idl || t.season !== season);
 
     return Promise.resolve();
 }

@@ -4,7 +4,7 @@ export default (api, foccacia) => {
     const teamTransformer = teams => Promise.all(
         teams.map(async t => {
             const team = await api.getTeamById(t.id);
-            const league = await api.getLeagueById(t.id);
+            const league = await api.getLeagueById(t.leagueId);
 
             if (!team || !league)
                 return throwError("s1");
@@ -15,7 +15,7 @@ export default (api, foccacia) => {
                 leagueId: t.leagueId,
                 league: league.name,
                 season: t.season,
-                stadium: t.stadium
+                stadium: team.stadium
             };
         })
     );

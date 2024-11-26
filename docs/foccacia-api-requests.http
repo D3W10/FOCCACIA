@@ -1,3 +1,5 @@
+@token = bde7a71b-6abf-4869-830d-75b2fa8168a0
+
 ### Search Clubs
 
 GET http://localhost:8080/api/clubs?name=Benfica
@@ -18,7 +20,7 @@ GET http://localhost:8080/api/leagues?team=211
 
 POST http://localhost:8080/api/groups
 Content-Type: application/json
-Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
+Authorization: Bearer {{token}}
 
 {
     "name" : "Awesome Group",
@@ -29,7 +31,7 @@ Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
 
 POST http://localhost:8080/api/groups
 Content-Type: application/json
-Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
+Authorization: Bearer {{token}}
 
 {
     "name" : "Awesome Group 2",
@@ -51,7 +53,7 @@ Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
 
 PUT http://localhost:8080/api/groups/1
 Content-Type: application/json
-Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
+Authorization: Bearer {{token}}
 
 {
     "name" : "Updated Awesome Group",
@@ -62,7 +64,7 @@ Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
 
 PUT http://localhost:8080/api/groups/1
 Content-Type: application/json
-Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
+Authorization: Bearer {{token}}
 
 {
     "name" : "Awesome Group Again"
@@ -75,7 +77,7 @@ Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
 ### List Group
 
 GET http://localhost:8080/api/groups
-Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
+Authorization: Bearer {{token}}
 
 
 
@@ -84,7 +86,7 @@ Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
 ### Delete Group
 
 DELETE http://localhost:8080/api/groups/1
-Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
+Authorization: Bearer {{token}}
 
 
 
@@ -93,9 +95,9 @@ Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
 ### Get Group Details
 
 GET http://localhost:8080/api/groups/1
-Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
+Authorization: Bearer {{token}}
 
-// TODO Unnexpected result
+
 
 
 
@@ -103,7 +105,7 @@ Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
 
 POST http://localhost:8080/api/groups/1/teams
 Content-Type: application/json
-Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
+Authorization: Bearer {{token}}
 
 {
     "teams": [
@@ -122,9 +124,9 @@ Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
 ### Remove Team from Group
 
 DELETE http://localhost:8080/api/groups/1/teams/211/leagues/3/seasons/2019
-Authorization: Bearer 9a557f3f-0ee5-4d67-9877-2fc99b60c23f
+Authorization: Bearer {{token}}
 
-// TODO Unnexpected result
+
 
 
 
