@@ -8,9 +8,7 @@ import { error, success } from "../utils/errorManager.js";
 function getAuth(req) {
     const auth = req.headers.authorization.split(" ", 2);
 
-    if (auth.length < 2)
-        Promise.reject(new Error("w9"));
-    else if (auth[0] !== "Bearer")
+    if (auth.length < 2 || auth[0] !== "Bearer")
         Promise.reject(new Error("w9"));
     else
         return auth[1];
