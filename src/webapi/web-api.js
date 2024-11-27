@@ -16,9 +16,9 @@ function getAuth(req) {
         return auth[1];
 }
 
-function handleError(res, tryFunc) {
+async function handleError(res, tryFunc) {
     try {
-        tryFunc();
+        await tryFunc();
     }
     catch (e) {
         if (e.code)

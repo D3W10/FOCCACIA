@@ -12,7 +12,7 @@ app.use(express.json());
 const service = serviceBuilder(api, foccacia);
 const webApi = webApiBuilder(service);
 
-app.get("/api/clubs", webApi.searchTeams);
+app.get("/api/teams", webApi.searchTeams);
 app.get("/api/leagues", webApi.searchLeagues);
 
 app.post("/api/groups", webApi.createGroup);

@@ -1,8 +1,8 @@
-@token = bde7a71b-6abf-4869-830d-75b2fa8168a0
+@token = 1ab99ebf-8cc3-4072-85af-1d4d5d62932e
 
-### Search Clubs
+### Search Teams
 
-GET http://localhost:8080/api/clubs?name=Benfica
+GET http://localhost:8080/api/teams?name=Benfica
 
 
 

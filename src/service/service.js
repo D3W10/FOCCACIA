@@ -80,17 +80,9 @@ export default (api, foccacia) => {
 
         getGroupDetails: async (id, token) => {
             const user = await getUserSafely(token);
-            const { userId, teams, ...group } = await getGroupSafely(id, user.id);
+            const { userId, ...group } = await getGroupSafely(id, user.id);
 
-            return {
-                ...group,
-                teams: teams.map(t => ({
-                    name: t.name,
-                    stadium: t.stadium,
-                    league: t.league,
-                    season: t.season
-                }))
-            };
+            return group;
         },
 
         addTeamsToGroup: async (id, teams = [], token) => {

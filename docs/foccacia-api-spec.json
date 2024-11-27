@@ -12,8 +12,8 @@
     ],
     "tags": [
         {
-            "name": "clubs",
-            "description": "Club search operations"
+            "name": "teams",
+            "description": "Team search operations"
         },
         {
             "name": "leagues",
@@ -29,18 +29,18 @@
         }
     ],
     "paths": {
-        "/api/clubs": {
+        "/api/teams": {
             "get": {
                 "tags": [
-                    "clubs"
+                    "teams"
                 ],
-                "summary": "Search for clubs",
+                "summary": "Search for teams",
                 "parameters": [
                     {
                         "name": "name",
                         "in": "query",
                         "required": true,
-                        "description": "Name of the club to search for",
+                        "description": "Name of the team to search for",
                         "schema": {
                             "type": "string"
                         }
@@ -52,17 +52,32 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/dataResponseArr"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/apiResponse"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/teamSearch"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
                                 }
                             }
                         }
                     },
                     "400": {
-                        "description": "Club name missing",
+                        "description": "Team name missing",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -93,7 +108,22 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/dataResponseArr"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/apiResponse"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/league"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -103,7 +133,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -142,7 +172,7 @@
                                     "teams": {
                                         "type": "array",
                                         "items": {
-                                            "type": "string"
+                                            "$ref": "#/components/schemas/team"
                                         }
                                     }
                                 }
@@ -156,7 +186,19 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/dataResponseObj"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/apiResponse"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "$ref": "#/components/schemas/group"
+                                                }
+                                            }
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -166,7 +208,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -176,7 +218,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -199,15 +241,22 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/apiResponse"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "integer"
+                                                    }
+                                                }
                                             }
                                         }
-                                    }
+                                    ]
                                 }
                             }
                         }
@@ -217,12 +266,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    }
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -275,7 +319,19 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/dataResponseObj"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/apiResponse"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "$ref": "#/components/schemas/group"
+                                                }
+                                            }
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -285,7 +341,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -295,7 +351,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -305,7 +361,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -338,7 +394,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/dataResponseStr"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -348,7 +404,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -358,7 +414,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -368,7 +424,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -401,7 +457,19 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/dataResponseObj"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/apiResponse"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "$ref": "#/components/schemas/group"
+                                                }
+                                            }
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -411,7 +479,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -421,7 +489,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -431,7 +499,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -473,7 +541,7 @@
                                     "teams": {
                                         "type": "array",
                                         "items": {
-                                            "type": "string"
+                                            "$ref": "#/components/schemas/team"
                                         }
                                     }
                                 }
@@ -487,7 +555,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/dataResponseStr"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -497,7 +565,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -507,7 +575,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -517,7 +585,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -525,7 +593,7 @@
                 }
             }
         },
-        "/api/groups/{id}/teams/{idt}": {
+        "/api/groups/{id}/teams/{idt}/leagues/{idl}/seasons/{season}": {
             "delete": {
                 "tags": [
                     "groups"
@@ -554,6 +622,24 @@
                         "schema": {
                             "type": "integer"
                         }
+                    },
+                    {
+                        "name": "idl",
+                        "in": "path",
+                        "required": true,
+                        "description": "League ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "season",
+                        "in": "path",
+                        "required": true,
+                        "description": "Season year",
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
                 ],
                 "responses": {
@@ -562,7 +648,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/dataResponseStr"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -572,7 +658,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -582,7 +668,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -592,7 +678,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -600,7 +686,7 @@
                 }
             }
         },
-        "/api/user": {
+        "/api/users": {
             "post": {
                 "tags": [
                     "users"
@@ -630,7 +716,19 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/dataResponseStr"
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/apiResponse"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "data": {
+                                                    "$ref": "#/components/schemas/user"
+                                                }
+                                            }
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -640,7 +738,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/errorResponse"
+                                    "$ref": "#/components/schemas/apiResponse"
                                 }
                             }
                         }
@@ -651,37 +749,133 @@
     },
     "components": {
         "schemas": {
-            "dataResponseArr": {
+            "apiResponse": {
                 "type": "object",
                 "properties": {
-                    "data": {
-                        "type": "array",
-                        "items": {
-                            "type": "object"
-                        }
-                    }
-                }
-            },
-            "dataResponseObj": {
-                "type": "object",
-                "properties": {
-                    "data": {
-                        "type": "object"
-                    }
-                }
-            },
-            "dataResponseStr": {
-                "type": "object",
-                "properties": {
-                    "data": {
+                    "code": {
+                        "type": "string"
+                    },
+                    "message": {
                         "type": "string"
                     }
                 }
             },
-            "errorResponse": {
+            "team": {
                 "type": "object",
                 "properties": {
-                    "message": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "leagueId": {
+                        "type": "integer"
+                    },
+                    "season": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "teamSearch": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "country": {
+                        "type": "string"
+                    },
+                    "founded": {
+                        "type": "integer"
+                    },
+                    "logo": {
+                        "type": "string"
+                    },
+                    "stadium": {
+                        "type": "string"
+                    },
+                    "city": {
+                        "type": "string"
+                    }
+                }
+            },
+            "teamGroup": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "leagueId": {
+                        "type": "integer"
+                    },
+                    "league": {
+                        "type": "string"
+                    },
+                    "season": {
+                        "type": "integer"
+                    },
+                    "stadium": {
+                        "type": "string"
+                    }
+                }
+            },
+            "league": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "logo": {
+                        "type": "string"
+                    },
+                    "country": {
+                        "type": "string"
+                    },
+                    "seasons": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            },
+            "group": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "teams": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/teamGroup"
+                        }
+                    }
+                }
+            },
+            "user": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "token": {
                         "type": "string"
                     }
                 }
