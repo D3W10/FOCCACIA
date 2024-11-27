@@ -68,7 +68,7 @@ export default (api, foccacia) => {
         listGroups: async token => {
             const user = await getUserSafely(token);
 
-            return foccacia.getGroupsByUser(user.id).then(groups => groups.map(g => g.id));
+            return (await foccacia.getGroupsByUser(user.id)).map(g => g.id);
         },
 
         deleteGroup: async (id, token) => {
