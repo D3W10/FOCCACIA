@@ -20,8 +20,10 @@
  * @property {String} token
  */
 
-let nextUserId = 1;
-let nextGroupId = 1;
+const USER_ID_START = 1, GROUP_ID_START = 1;
+
+let nextUserId = USER_ID_START;
+let nextGroupId = GROUP_ID_START;
 
 /** @type {User[]} */
 const users = [];
@@ -129,6 +131,10 @@ function addTeamsToGroup(id, teams) {
  */
 function removeTeamsFromGroup(id, idt, idl, season) {
     const group = groups.find(g => g.id === id);
+
+    if (!group.teams.find(t => t.id === idt && t.leagueId === idl && t.season === season))
+        return Promise.reject({ code: "d1" });
+
     group.teams = group.teams.filter(t => t.id !== idt || t.leagueId !== idl || t.season !== season);
 
     return Promise.resolve();
@@ -150,6 +156,13 @@ function createUser(name) {
     return Promise.resolve(newUser);
 }
 
+function resetData() {
+    nextUserId = USER_ID_START;
+    nextGroupId = GROUP_ID_START;
+    users.length = 0;
+    groups.length = 0;
+}
+
 export default {
     getUserByToken,
     getGroupById,
@@ -159,5 +172,6 @@ export default {
     deleteGroup,
     addTeamsToGroup,
     removeTeamsFromGroup,
-    createUser
+    createUser,
+    resetData
 }

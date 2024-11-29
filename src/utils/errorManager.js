@@ -21,7 +21,8 @@ export const errors = {
     w10: { status: 400, message: "Invalid season" },
     s1: { status: 502, message: "External API error" },
     s2: { status: 404, message: "User not found" },
-    s3: { status: 404, message: "Group not found" }
+    s3: { status: 404, message: "Group not found" },
+    d1: { status: 400, message: "No such team in this group" }
 }
 
 export function error(res, code) {
