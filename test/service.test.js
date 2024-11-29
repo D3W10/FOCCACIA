@@ -88,7 +88,7 @@ describe("Service", () => {
     });
     
     describe("editGroup()", () => {
-        //TODO post o jony é burrinho 
+        //TODO fazer juntos pq o joao nao sabe 
     });
 
     describe("listGroups()", () => {
@@ -110,19 +110,55 @@ describe("Service", () => {
     });
     
     describe("deleteGroup()", () => {
-        
+      it("Should return the confirmation of deletion of the group", async () => {
+        const user = (await service.createUser("Joniel")).token;
+        service.createGroup("Grupo teste", "", [], user)
+        service.createGroup("Grupo teste 2", "", [], user)
+        expect(await service.deleteGroup("1")).fulfilled
+      });
+
+      it("Should return the confirmation of deletion of the group (with teams)", async () => {
+        const user = (await service.createUser("Joniel")).token;
+        service.createGroup("Grupo teste", "", [{"id": 211, "leagueId": 3, "season": 2019}], user)
+        service.createGroup("Grupo teste 2", "", [], user)
+        expect(await service.deleteGroup("1")).fulfilled
+      }); //TODO confirmar com teste api
+
+      it("Should return the error s3", async () => {
+        const user = (await service.createUser("Joniel")).token;
+        service.createGroup("Grupo teste", "", [], user)
+        service.createGroup("Grupo teste 2", "", [], user)
+        await expect(service.deleteGroup("7")).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "s3" }));
+      });
     });
 
     describe("getGroupDetails()", () => {
-        
+      it("Should return the group details", async () => {
+        const user = (await service.createUser("Joniel")).token;
+        service.createGroup("Grupo teste", "conteudo manhoso", [], user)
+        service.createGroup("Grupo teste 2", "", [], user)
+        expect(await service.getGroupDetails("1", user)).to.deep.equals({
+            "id": 1,
+            "name": "Grupo teste",
+            "description": "conteudo manhoso",
+            "teams": []
+        })
+      });
+      
+      it("Should return the error s3", async () => {
+        const user = (await service.createUser("Joniel")).token;
+        service.createGroup("Grupo teste", "conteudo manhoso", [], user)
+        service.createGroup("Grupo teste 2", "", [], user)
+        await expect(service.getGroupDetails("7", user)).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "s3" }));
+      });
     });
 
     describe("addTeamsToGroup()", () => {
-        
+        //TODO deve ser parecido ao edit ent e foda
     });
     
     describe("removeTeamFromGroup()", () => {
-        
+        //TODO deve ser parecido ao edit ent e foda
     });
 
     describe("createUser()", () => {
