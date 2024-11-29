@@ -270,22 +270,78 @@ describe("Service", () => {
                   }
                 ]
               });
-
         });
 
+        it("Should return the error w1", async () => {
+          const user = (await service.createUser("Joniel")).token;
+          expect(await service.createGroup(undefined, "teste grupo", undefined, user)).to.deep.equal({
+              //TODO nao tem data ent ns bem
+          });
+        });
 
+        it("Should return the group with the teams", async () => {
+          const user = (await service.createUser("Joniel")).token;
+          expect(await service.createGroup(undefined, "teste grupo", undefined, user)).to.deep.equal({
+            "id": 1,
+            "name": "Awesome Group 2",
+            "description": "This is the second best group ever!",
+            "teams": [
+              {
+                "id": 211,
+                "name": "Benfica",
+                "leagueId": 94,
+                "league": "Primeira Liga",
+                "season": 2022,
+                "stadium": "Estádio do Sport Lisboa e Benfica (da Luz)"
+              },
+              {
+                "id": 211,
+                "name": "Benfica",
+                "leagueId": 94,
+                "league": "Primeira Liga",
+                "season": 2022,
+                "stadium": "Estádio do Sport Lisboa e Benfica (da Luz)"
+              }
+            ]
+          });
+        });
 
-
+        it("Should return the error w8", async () => {
+          const user = (await service.createUser("Joniel")).token;
+          expect(await service.createGroup(undefined, "teste grupo", [
+            {
+                "leagueId": 94,
+                "season": 2022
+            }
+        ], user)).to.deep.equal({
+            //TODO mesmo do erro w1
+          });
+        });
     });
     
     describe("editGroup()", () => {
-        
+        //TODO post o jony é burrinho 
     });
 
     describe("listGroups()", () => {
-        
-    });
+      it("Should return all Groups", async () => {
+        const user = (await service.createUser("Joniel")).token;
+        expect(await service.listGroups(token)).to.deep.equal(
+            //TODO questao da qntdd de grupos
+        );
+      });
 
+      it("Should return empty for non-existing groups created", async () => {
+          expect(await service.listGroups(token)).to.deep.equal([]);
+      });
+    
+      it("Should return error w3", async () => {
+        expect(await service.listGroups("absfh")).to.deep.equal([
+          //TODO erros
+        ]);
+    });
+    });
+    
     describe("deleteGroup()", () => {
         
     });
@@ -303,7 +359,20 @@ describe("Service", () => {
     });
 
     describe("createUser()", () => {
-        
+      it("Should return all Groups", async () => {
+        expect(await service.createUser("Joniel")).to.deep.equal({
+          "id": 1,
+          "name": "Joniel",
+          "token": //TODO buscar o token
+        });
+      });
+ 
+      it("Should return all Groups", async () => {
+        expect(await service.createUser(undefined)).to.deep.equal(
+            //TODO erro
+        );
+      });
+
     }); 
 
 });
