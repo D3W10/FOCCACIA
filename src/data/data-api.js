@@ -80,7 +80,7 @@ async function getTeamsByName(name) {
 }
 
 /**
- * @param {Number} team 
+ * @param {String} team 
  * @returns {Promise<Array<League> | undefined>}
  */
 async function getLeaguesByTeam(team) {
@@ -90,7 +90,7 @@ async function getLeaguesByTeam(team) {
 }
 
 /**
- * @param {Number} id 
+ * @param {String} id 
  * @returns {Promise<Team | undefined>}
  */
 async function getTeamById(id) {
@@ -100,7 +100,7 @@ async function getTeamById(id) {
 }
 
 /**
- * @param {Number} id 
+ * @param {String} id 
  * @returns {Promise<League | undefined>}
  */
 async function getLeagueById(id) {
