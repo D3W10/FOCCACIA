@@ -42,13 +42,13 @@ export default (api, foccacia) => {
         searchTeams: async name => {
             const teams = await api.getTeamsByName(name);
 
-            return teams ? teams : throwError("s1");
+            return teams ?? throwError("s1");
         },
 
         searchLeagues: async team => {
             const leagues = await api.getLeaguesByTeam(team);
 
-            return leagues ? leagues : throwError("s1");
+            return leagues ?? throwError("s1");
         },
 
         createGroup: async (name, description = "", teams = [], token) => {
