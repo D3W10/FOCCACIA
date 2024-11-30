@@ -59,7 +59,7 @@ describe("Service", () => {
             });
         });
 
-        it("Should return the created group with team/s", async () => {
+        it("Should return the created group with teams", async () => {
             const user = (await service.createUser("Alice")).token;
 
             expect(await service.createGroup("Grupo 1", "O meu primeiro grupo", [
@@ -90,7 +90,43 @@ describe("Service", () => {
     });
     
     describe("editGroup()", () => {
-        //TODO fazer juntos pq o joao nao sabe 
+        it("Should update all group details", async () => {
+            const user = (await service.createUser("Alice")).token;
+            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user);
+
+            expect(await service.editGroup(1, {
+                name: "Grupo 1 Modificado",
+                description: "O meu novo primeiro grupo"
+            }, user)).to.deep.equal({
+                "id": 1,
+                "name": "Grupo 1 Modificado",
+                "description": "O meu novo primeiro grupo",
+                "teams": []
+            });
+        });
+
+        it("Should update some group details", async () => {
+            const user = (await service.createUser("Alice")).token;
+            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user);
+
+            expect(await service.editGroup(1, {
+                name: "Grupo 1 Modificado"
+            }, user)).to.deep.equal({
+                "id": 1,
+                "name": "Grupo 1 Modificado",
+                "description": "O meu primeiro grupo",
+                "teams": []
+            });
+
+            expect(await service.editGroup(1, {
+                description: "O meu novo primeiro grupo"
+            }, user)).to.deep.equal({
+                "id": 1,
+                "name": "Grupo 1 Modificado",
+                "description": "O meu novo primeiro grupo",
+                "teams": []
+            });
+        });
     });
 
     describe("listGroups()", () => {
@@ -109,7 +145,7 @@ describe("Service", () => {
         });
         
         it("Should return error s2 when no valid token is provided", async () => {
-            await expect(service.listGroups("A1B2C3D4")).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "s2" }));
+            await expect(service.listGroups("0")).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "s2" }));
         });
     });
     
@@ -118,14 +154,14 @@ describe("Service", () => {
             const user = (await service.createUser("Alice")).token;
             await service.createGroup("Grupo 1", "", [], user);
 
-            expect(service.deleteGroup(1, user)).fulfilled;
+            await expect(service.deleteGroup(1, user)).fulfilled;
         });
 
         it("Should return the confirmation of deletion of the group (with teams)", async () => {
             const user = (await service.createUser("Alice")).token;
             await service.createGroup("Grupo 1", "", [{"id": 211, "leagueId": 3, "season": 2019}], user);
 
-            expect(service.deleteGroup(1, user)).fulfilled;
+            await expect(service.deleteGroup(1, user)).fulfilled;
         });
 
         it("Should return the error s3 when no such group exists", async () => {
@@ -157,11 +193,110 @@ describe("Service", () => {
     });
 
     describe("addTeamsToGroup()", () => {
-        //TODO deve ser parecido ao edit ent e foda
+        it("Should add teams to the group", async () => {
+            const user = (await service.createUser("Alice")).token;
+            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user);
+
+            await expect(service.addTeamsToGroup(1, [
+                {
+                    "id": 211,
+                    "leagueId": 94,
+                    "season": 2022
+                }
+            ], user)).fulfilled.then(async () =>
+                expect(await service.getGroupDetails(1, user)).to.deep.equal({
+                    "id": 1,
+                    "name": "Grupo 1",
+                    "description": "O meu primeiro grupo",
+                    "teams": [
+                        {
+                            "id": 211,
+                            "name": "Benfica",
+                            "leagueId": 94,
+                            "league": "Primeira Liga",
+                            "season": 2022,
+                            "stadium": "Estádio do Sport Lisboa e Benfica (da Luz)"
+                        }
+                    ]
+                })
+            );
+
+            await service.createGroup("Grupo 2", "O meu segundo grupo", [], user);
+
+            await expect(service.addTeamsToGroup(2, [
+                {
+                    "id": 211,
+                    "leagueId": 94,
+                    "season": 2022
+                },
+                {
+                    "id": 212,
+                    "leagueId": 94,
+                    "season": 2022
+                }
+            ], user)).fulfilled.then(async () =>
+                expect(await service.getGroupDetails(2, user)).to.deep.equal({
+                    "id": 2,
+                    "name": "Grupo 2",
+                    "description": "O meu segundo grupo",
+                    "teams": [
+                        {
+                            "id": 211,
+                            "name": "Benfica",
+                            "leagueId": 94,
+                            "league": "Primeira Liga",
+                            "season": 2022,
+                            "stadium": "Estádio do Sport Lisboa e Benfica (da Luz)"
+                        },
+                        {
+                            "id": 212,
+                            "name": "FC Porto",
+                            "leagueId": 94,
+                            "league": "Primeira Liga",
+                            "season": 2022,
+                            "stadium": "Estádio Do Dragão"
+                        }
+                    ]
+                })
+            );
+        });
+
+        it("Should return the error s3 when no such group exists", async () => {
+            const user1 = (await service.createUser("Alice")).token;
+            const user2 = (await service.createUser("Alice")).token;
+            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user1);
+
+            await expect(service.addTeamsToGroup(1, [
+                {
+                    "id": 211,
+                    "leagueId": 94,
+                    "season": 2022
+                }
+            ], user2)).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "w4" }));
+        });
     });
     
     describe("removeTeamFromGroup()", () => {
-        //TODO deve ser parecido ao edit ent e foda
+        it("Should remove teams from the group", async () => {
+            const user = (await service.createUser("Alice")).token;
+            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user);
+            await service.addTeamsToGroup(1, [
+                {
+                    "id": 211,
+                    "leagueId": 94,
+                    "season": 2022
+                }
+            ], user);
+
+            await expect(service.removeTeamFromGroup(1, 211, 94, 2022, user)).fulfilled;
+        });
+
+        it("Should return the error d1 when no such team exists on the group", async () => {
+            const user = (await service.createUser("Alice")).token;
+            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user);
+
+            await expect(service.removeTeamFromGroup(1, 211, 94, 2022, user)).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "d1" }));
+        });
     });
 
     describe("createUser()", () => {
