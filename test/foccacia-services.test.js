@@ -1,9 +1,9 @@
 import { beforeEach, describe, it } from "mocha";
 import { expect, use} from "chai";
 import chaiAsPromised from "chai-as-promised";
-import serviceBuilder from "../src/service/service.js";
-import api from "../src/data/data-api-fake.js";
-import foccacia from "../src/data/data-foccacia.js";
+import serviceBuilder from "../src/service/foccacia-services.js";
+import api from "../src/data/fapi-teams-data-fake.js";
+import foccacia from "../src/data/fapi-teams-data.js";
 
 use(chaiAsPromised);
 
