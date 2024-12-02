@@ -124,18 +124,26 @@ function addTeamsToGroup(id, teams) {
 /**
  * Remove a team from a group
  * @param {Number} id
- * @param {Number} idt
- * @param {Number} idl
+ * @param {Number} idTeam
+ * @param {Number} leagueId
+ * @param {Number} season
+ * @returns {Promise<Team>}
+ */
+function getTeamOfGroup(id, idTeam, leagueId, season) {
+    return Promise.resolve(groups.find(g => g.id === id).teams.find(t => t.id === idTeam && t.leagueId === leagueId && t.season === season));
+}
+
+/**
+ * Remove a team from a group
+ * @param {Number} id
+ * @param {Number} idTeam
+ * @param {Number} leagueId
  * @param {Number} season
  * @returns {Promise<void>}
  */
-function removeTeamsFromGroup(id, idt, idl, season) {
+function removeTeamsFromGroup(id, idTeam, leagueId, season) {
     const group = groups.find(g => g.id === id);
-
-    if (!group.teams.find(t => t.id === idt && t.leagueId === idl && t.season === season))
-        return Promise.reject({ code: "d1" });
-
-    group.teams = group.teams.filter(t => t.id !== idt || t.leagueId !== idl || t.season !== season);
+    group.teams = group.teams.filter(t => t.id !== idTeam || t.leagueId !== leagueId || t.season !== season);
 
     return Promise.resolve();
 }
@@ -171,6 +179,7 @@ export default {
     getGroupsByUser,
     deleteGroup,
     addTeamsToGroup,
+    getTeamOfGroup,
     removeTeamsFromGroup,
     createUser,
     resetData

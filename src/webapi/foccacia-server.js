@@ -9,6 +9,8 @@ const app = express();
 
 app.use(express.json());
 
+app.set("view engine", "hbs");
+
 const service = serviceBuilder(api, foccacia);
 const webApi = webApiBuilder(service);
 

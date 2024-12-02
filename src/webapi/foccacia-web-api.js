@@ -5,18 +5,9 @@ import { error, success } from "../utils/errorManager.js";
  * @typedef {import("express").Response} Response
  */
 
-function getAuth(req) {
-    const auth = req.headers.authorization.split(" ", 2);
-
-    if (auth.length < 2 || auth[0] !== "Bearer")
-        Promise.reject({ code: "w9" });
-    else
-        return auth[1];
-}
-
-async function handleError(res, tryFunc) {
+async function handleError(res, tryFunc, code) {
     try {
-        await tryFunc();
+        success(res, await tryFunc(), code);
     }
     catch (e) {
         if (e.code)
@@ -34,14 +25,7 @@ export default (service) => ({
      * @param {Response} res 
      */
     searchTeams: (req, res) => {
-        handleError(res, async () => {
-            const name = req.query.name;
-
-            if (!name)
-                error(res, "w7");
-            else
-                success(res, await service.searchTeams(name), 200);
-        });
+        handleError(res, () => service.searchTeams(req.query.name));
     },
 
     /**
@@ -49,14 +33,7 @@ export default (service) => ({
      * @param {Response} res 
      */
     searchLeagues: (req, res) => {
-        handleError(res, async () => {
-            const id = +req.query.team;
-
-            if (isNaN(id))
-                error(res, "w5");
-            else
-                success(res, await service.searchLeagues(id), 200);
-        });
+        handleError(res, () => service.searchLeagues(+req.query.team));
     },
 
     /**
@@ -64,16 +41,7 @@ export default (service) => ({
      * @param {Response} res 
      */
     createGroup: (req, res) => {
-        handleError(res, async () => {
-            if (!req.body.name)
-                error(res, "w1");
-            else if (req.body.teams && (!Array.isArray(req.body.teams) || !req.body.teams.every(t => typeof t.id === "number" && typeof t.leagueId === "number" && typeof t.season === "number")))
-                error(res, "w8");
-            else if (!req.headers.authorization)
-                error(res, "w3");
-            else
-                success(res, await service.createGroup(req.body.name, req.body.description, req.body.teams, getAuth(req)), 201);
-        });
+        handleError(res, () => service.createGroup(req.body.name, req.body.description, req.body.teams, req.headers.authorization), 201);
     },
 
     /**
@@ -81,21 +49,10 @@ export default (service) => ({
      * @param {Response} res 
      */
     editGroup: (req, res) => {
-        handleError(res, async () => {
-            const id = +req.params.id;
-
-            if (!req.body.name && !req.body.description)
-                error(res, "w2");
-            else if (!req.headers.authorization)
-                error(res, "w3");
-            else if (isNaN(id))
-                error(res, "w5");
-            else
-                success(res, await service.editGroup(id, {
-                    name: req.body.name,
-                    description: req.body.description
-                }, getAuth(req)));
-        });
+        handleError(res, () => service.editGroup(+req.params.id, {
+            name: req.body.name,
+            description: req.body.description
+        }, req.headers.authorization));
     },
 
     /**
@@ -103,12 +60,7 @@ export default (service) => ({
      * @param {Response} res 
      */
     listGroups: (req, res) => {
-        handleError(res, async () => {
-            if (!req.headers.authorization)
-                error(res, "w3");
-            else
-                success(res, await service.listGroups(getAuth(req)));
-        });
+        handleError(res, () => service.listGroups(req.headers.authorization));
     },
 
     /**
@@ -116,17 +68,9 @@ export default (service) => ({
      * @param {Response} res 
      */
     deleteGroup: (req, res) => {
-        handleError(res, async () => {
-            const id = +req.params.id;
-
-            if (!req.headers.authorization)
-                error(res, "w3");
-            else if (isNaN(id))
-                error(res, "w5");
-            else {
-                await service.deleteGroup(id, getAuth(req));
-                success(res, "Group deleted successfully");
-            }
+        handleError(res, () => {
+            service.deleteGroup(+req.params.id, req.headers.authorization);
+            return "Group deleted successfully";
         });
     },
 
@@ -135,16 +79,7 @@ export default (service) => ({
      * @param {Response} res 
      */
     getGroupDetails: (req, res) => {
-        handleError(res, async () => {
-            const id = +req.params.id;
-
-            if (!req.headers.authorization)
-                error(res, "w3");
-            else if (isNaN(id))
-                error(res, "w5");
-            else
-                success(res, await service.getGroupDetails(id, getAuth(req)));
-        });
+        handleError(res, () => service.getGroupDetails(+req.params.id, req.headers.authorization));
     },
 
     /**
@@ -152,19 +87,9 @@ export default (service) => ({
      * @param {Response} res 
      */
     addTeamsToGroup: (req, res) => {
-        handleError(res, async () => {
-            const id = +req.params.id;
-
-            if (!req.body.teams || !Array.isArray(req.body.teams))
-                error(res, "w8");
-            else if (!req.headers.authorization)
-                error(res, "w3");
-            else if (isNaN(id))
-                error(res, "w5");
-            else {
-                await service.addTeamsToGroup(id, req.body.teams, getAuth(req));
-                success(res, "Teams added to group successfully");
-            }
+        handleError(res, () => {
+            service.addTeamsToGroup(+req.params.id, req.body.teams, req.headers.authorization);
+            return "Teams added to group successfully";
         });
     },
 
@@ -173,22 +98,9 @@ export default (service) => ({
      * @param {Response} res 
      */
     removeTeamFromGroup: (req, res) => {
-        handleError(res, async () => {
-            const id = +req.params.id;
-            const idt = +req.params.idt;
-            const idl = +req.params.idl;
-            const season = +req.params.season;
-
-            if (!req.headers.authorization)
-                error(res, "w3");
-            else if (isNaN(id) || isNaN(idt) || isNaN(idl))
-                error(res, "w5");
-            else if (isNaN(season))
-                error(res, "w10");
-            else {
-                await service.removeTeamFromGroup(id, idt, idl, season, getAuth(req));
-                success(res, "Team removed from group successfully");
-            }
+        handleError(res, () => {
+            service.removeTeamFromGroup(+req.params.id, +req.params.idt, +req.params.idl, +req.params.season, req.headers.authorization);
+            return "Team removed from group successfully";
         });
     },
 
@@ -197,11 +109,6 @@ export default (service) => ({
      * @param {Response} res 
      */
     createUser: (req, res) => {
-        handleError(res, async () => {
-            if (!req.body.name)
-                error(res, "w6");
-            else
-                success(res, await service.createUser(req.body.name), 201);
-        });
+        handleError(res, () => service.createUser(req.body.name), 201);
     }
 });
