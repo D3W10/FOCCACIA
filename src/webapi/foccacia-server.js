@@ -1,8 +1,8 @@
 import express from "express";
-import webApiBuilder from "./web-api.js";
-import serviceBuilder from "../service/service.js";
-import api from "../data/data-api.js";
-import foccacia from "../data/data-foccacia.js";
+import webApiBuilder from "./foccacia-web-api.js";
+import serviceBuilder from "../service/foccacia-services.js";
+import api from "../data/fapi-teams-data.js";
+import foccacia from "../data/foccacia-data-mem.js";
 
 const PORT = 8080;
 const app = express();

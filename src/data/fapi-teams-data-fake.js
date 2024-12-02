@@ -1,6 +1,6 @@
 /**
- * @typedef {import("./data-api").Team} Team
- * @typedef {import("./data-api").League} League
+ * @typedef {import("./fapi-teams-data").Team} Team
+ * @typedef {import("./fapi-teams-data").League} League
  */
 
 /**
