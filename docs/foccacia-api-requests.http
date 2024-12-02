@@ -1,17 +1,141 @@
- 
-GET http://localhost:8080/tasks
+@url = http://localhost:8080
+@token = da5b86f6-84b3-42bd-9534-1dfac4f28802
+
+### Search Teams
+
+GET {{url}}/api/teams?name=Benfica
+
+
+
+
+
+### Search Leagues
+
+GET {{url}}/api/leagues?team=211
+
+
+
+
+
+### Create Group
+
+POST {{url}}/api/groups
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name" : "Awesome Group",
+    "description": "This is the best group ever!"
+}
 
 ###
 
-GET http://localhost:8080/tasks/1
-###
-GET http://localhost:8080/tasks/2
+POST {{url}}/api/groups
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name" : "Awesome Group 2",
+    "description": "This is the second best group ever!",
+    "teams": [
+        {
+            "id": 211,
+            "leagueId": 94,
+            "season": 2022
+        }
+    ]
+}
+
+
+
+
+
+### Edit Group
+
+PUT {{url}}/api/groups/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name" : "Updated Awesome Group",
+    "description": "The best group is even better!"
+}
 
 ###
 
-POST http://localhost:8080/tasks
+PUT {{url}}/api/groups/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name" : "Awesome Group Again"
+}
+
+
+
+
+
+### List Group
+
+GET {{url}}/api/groups
+Authorization: Bearer {{token}}
+
+
+
+
+
+### Delete Group
+
+DELETE {{url}}/api/groups/1
+Authorization: Bearer {{token}}
+
+
+
+
+
+### Get Group Details
+
+GET {{url}}/api/groups/1
+Authorization: Bearer {{token}}
+
+
+
+
+
+### Add Teams to Group
+
+POST {{url}}/api/groups/1/teams
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "teams": [
+        {
+            "id": 211,
+            "leagueId": 3,
+            "season": 2019
+        }
+    ]
+}
+
+
+
+
+
+### Remove Team from Group
+
+DELETE {{url}}/api/groups/1/teams/211/leagues/3/seasons/2019
+Authorization: Bearer {{token}}
+
+
+
+
+
+### Create User
+
+POST {{url}}/api/users
 Content-Type: application/json
 
 {
-    "text" : "Temos de fazer o trabalho de PI"
+    "name" : "Alice"
 }

@@ -1,16 +1,21 @@
 {
-  "name": "aula10",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "type": "module",
-  "dependencies": {
-    "express": "^4.21.1"
-  }
+    "name": "foccacia",
+    "version": "1.0.0",
+    "description": "Foccacia API - PI assignment 2",
+    "author": "G06",
+    "scripts": {
+        "start": "node .",
+        "nodemon": "nodemon",
+        "test": "mocha --recursive"
+    },
+    "main": "src/webapi/server.js",
+    "type": "module",
+    "dependencies": {
+        "express": "^4.21.1"
+    },
+    "devDependencies": {
+        "chai": "^5.1.1",
+        "mocha": "^10.7.3",
+        "nodemon": "^3.1.7"
+    }
 }
