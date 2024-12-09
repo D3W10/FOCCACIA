@@ -2,26 +2,18 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <link rel="stylesheet" href="./styles/output.css">
+        <link rel="stylesheet" href="/styles/output.css">
         <title>FOCCACIA</title>
     </head>
     <body>
-        <div class="flex justify-center items-center absolute top-0 left-0 right-0 border-b border-orange-600/30 shadow-md shadow-orange-600/10 z-50">
-            <div class="w-full max-w-8xl px-6 py-4 flex justify-between items-center">
-                <div class="flex items-center space-x-2">
-                    {{> ball size="size-4"}}
-                    <a href="/" class="font-bold text-lg">FOCCACIA</a>
-                </div>
-                <button class="px-5 py-1.5 font-semibold text-white bg-orange-600 rounded-lg shadow-md inset-shadow-lg inset-shadow-white/20 ring ring-orange-600 inset-ring-2 inset-ring-white/30">Create account</button>
-            </div>
-        </div>
+        {{> navbar}}
         <div class="w-full h-full flex flex-col justify-center items-center">
             {{> ball size="size-20"}}
             <h1 class="mt-10 text-6xl font-extrabold">FOCCACIA</h1>
             <p class="mt-4 text-lg">Search for teams, create groups and more!</p>
             <div class="mt-8 flex space-x-6">
-                <button class="px-5 py-1.5 font-semibold text-white bg-orange-600 rounded-lg shadow-md inset-shadow-lg inset-shadow-white/20 ring ring-orange-600 inset-ring-2 inset-ring-white/30">Search Teams</button>
-                <button class="px-5 py-1.5 font-semibold text-white bg-orange-600 rounded-lg shadow-md inset-shadow-lg inset-shadow-white/20 ring ring-orange-600 inset-ring-2 inset-ring-white/30">Search Leagues</button>
+                <a href="/search/teams" class="px-5 py-1.5 font-semibold text-white bg-orange-600 rounded-lg shadow-md inset-shadow-lg inset-shadow-white/20 ring ring-orange-600 inset-ring-2 inset-ring-white/30">Search Teams</a>
+                <a href="/search/leagues" class="px-5 py-1.5 font-semibold text-white bg-orange-600 rounded-lg shadow-md inset-shadow-lg inset-shadow-white/20 ring ring-orange-600 inset-ring-2 inset-ring-white/30">Search Leagues</a>
             </div>
         </div>
     </body>

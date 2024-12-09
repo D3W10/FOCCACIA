@@ -40,6 +40,8 @@ app.post("/api/users", webApi.createUser);
 //#region Website Endpoints
 
 app.get("/", webUi.home);
+app.get("/search/teams", webUi.searchTeams);
+app.get("/search/leagues", webUi.searchLeagues);
 
 //#endregion
 
