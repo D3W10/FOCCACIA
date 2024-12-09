@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@theme {
+    --spacing-8xl: 90rem;
+}
+
+html, body {
+    @apply w-screen h-screen;
+}
