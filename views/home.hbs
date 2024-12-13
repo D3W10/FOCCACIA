@@ -11,9 +11,9 @@
             {{> ball size="size-20"}}
             <h1 class="mt-10 text-6xl font-extrabold">FOCCACIA</h1>
             <p class="mt-4 text-lg">Search for teams, create groups and more!</p>
-            <div class="mt-8 flex space-x-6">
-                <a href="/search/teams" class="px-5 py-1.5 font-semibold text-white bg-orange-600 rounded-lg shadow-md inset-shadow-lg inset-shadow-white/20 ring ring-orange-600 inset-ring-2 inset-ring-white/30">Search Teams</a>
-                <a href="/search/leagues" class="px-5 py-1.5 font-semibold text-white bg-orange-600 rounded-lg shadow-md inset-shadow-lg inset-shadow-white/20 ring ring-orange-600 inset-ring-2 inset-ring-white/30">Search Leagues</a>
+            <div class="mt-8 flex space-x-4">
+                {{#> button href="/signup"}}Start Now{{/button}}
+                {{#> button href="/search/teams" secondary=true}}Search Teams{{/button}}
             </div>
         </div>
     </body>

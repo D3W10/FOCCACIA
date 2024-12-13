@@ -1,10 +1,10 @@
 import express from "express";
 import hbs from "hbs";
 import webApiBuilder from "./foccacia-web-api.js";
+import webUiBuilder from "./foccacia-web-ui.js";
 import serviceBuilder from "../service/foccacia-services.js";
 import api from "../data/fapi-teams-data.js";
 import foccacia from "../data/foccacia-data-mem.js";
-import webUi from "./foccacia-web-ui.js";
 
 const PORT = 8080;
 const app = express();
@@ -19,6 +19,7 @@ hbs.registerPartials("./views/components");
 
 const service = serviceBuilder(api, foccacia);
 const webApi = webApiBuilder(service);
+const webUi = webUiBuilder(service);
 
 //#region API Endpoints
 
@@ -42,6 +43,8 @@ app.post("/api/users", webApi.createUser);
 app.get("/", webUi.home);
 app.get("/search/teams", webUi.searchTeams);
 app.get("/search/leagues", webUi.searchLeagues);
+app.get("/signup", webUi.signup);
+app.get("/login", webUi.login);
 
 //#endregion
 

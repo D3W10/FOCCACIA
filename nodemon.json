@@ -2,6 +2,6 @@
     "watch": [
         "."
     ],
-    "ext": "js, json",
+    "ext": "js, json, hbs",
     "exec": "npm run start"
 }

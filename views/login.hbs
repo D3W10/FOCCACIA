@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/styles/output.css">
+        <title>FOCCACIA | Log In</title>
+    </head>
+    <body class="w-full h-full flex flex-col justify-center items-center">
+        {{#> signin
+            btnText="Log In"
+            callback="#"
+        }}
+            Don't have an account? <a href="/signup" class="font-bold text-orange-600">Sign up</a> instead
+        {{/signin}}
+    </body>
+</html>

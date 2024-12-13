@@ -4,6 +4,9 @@
             {{> ball size="size-4"}}
             <a href="/" class="font-bold text-lg">FOCCACIA</a>
         </div>
-        <a href="#" class="px-5 py-1.5 font-semibold text-white bg-orange-600 rounded-lg shadow-md inset-shadow-lg inset-shadow-white/20 ring ring-orange-600 inset-ring-2 inset-ring-white/30">Create account</a>
+        <div class="flex items-center space-x-4">
+            {{#> button href="/signup"}}Create account{{/button}}
+            {{#> button href="/login" secondary=true}}Log In{{/button}}
+        </div>
     </div>
 </div>

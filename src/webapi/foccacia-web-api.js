@@ -1,7 +1,7 @@
 import { error, success } from "../utils/errorManager.js";
 
 /**
- * @typedef {import("express").Request & {json: () => Promise<any>}} Request
+ * @typedef {import("express").Request} Request
  * @typedef {import("express").Response} Response
  */
 
