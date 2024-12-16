@@ -377,6 +377,7 @@
     --default-mono-font-variation-settings: var(
       --font-mono--font-variation-settings
     );
+    --font-display: "Inter";
     --spacing-8xl: 90rem;
   }
 }
@@ -822,6 +823,7 @@
 html, body {
   height: 100vh;
   width: 100vw;
+  font-family: var(--font-display);
 }
 @supports (-moz-orient: inline) {
   @layer base {
