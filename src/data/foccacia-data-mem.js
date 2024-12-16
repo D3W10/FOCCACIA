@@ -8,14 +8,20 @@
  * @property {String} stadium
  *
  * @typedef {Object} Group
- * @property {Number} id
+ * @property {String} id
  * @property {String} name 
  * @property {String} description
- * @property {Number} userId
+ * @property {String} userId
+ * @property {Team[]} teams
+ * 
+ * @typedef {Object} SafeGroup
+ * @property {String} id
+ * @property {String} name 
+ * @property {String} description
  * @property {Team[]} teams
  * 
  * @typedef {Object} User
- * @property {Number} id
+ * @property {String} id
  * @property {String} name
  * @property {String} token
  */
@@ -42,7 +48,7 @@ function getUserByToken(token){
 
 /**
  * Obtains the group with a specific id
- * @param {Number} id 
+ * @param {Group["id"]} id 
  * @returns {Promise<Group | undefined>}
  */
 function getGroupById(id) {
@@ -55,11 +61,11 @@ function getGroupById(id) {
  * @param {String} description
  * @param {Team[]} teams
  * @param {User["id"]} user
- * @returns {Promise<Omit<Group, "userId">>}
+ * @returns {Promise<SafeGroup>}
  */
 function createGroup(name, description, teams, user) {
     const group = {
-        id: nextGroupId++,
+        id: (nextGroupId++).toString(),
         name,
         description: description || "",
         userId: user,
@@ -74,9 +80,9 @@ function createGroup(name, description, teams, user) {
 
 /**
  * Updates a group
- * @param {Number} id
+ * @param {Group["id"]} id
  * @param {Partial<Group>} changes
- * @returns {Promise<Omit<Group, "userId">>}
+ * @returns {Promise<SafeGroup>}
  */
 function updateGroup(id, changes) {
     const group = groups.find(g => g.id === id);
@@ -100,7 +106,7 @@ function getGroupsByUser(user) {
 
 /**
  * Deletes a group
- * @param {Number} id
+ * @param {Group["id"]} id
  * @returns {Promise<void>}
  */
 function deleteGroup(id) {
@@ -110,7 +116,7 @@ function deleteGroup(id) {
 
 /**
  * Adds teams to a group
- * @param {Number} id
+ * @param {Group["id"]} id
  * @param {Team[]} teams
  * @returns {Promise<void>}
  */
@@ -123,8 +129,8 @@ function addTeamsToGroup(id, teams) {
 
 /**
  * Remove a team from a group
- * @param {Number} id
- * @param {Number} idTeam
+ * @param {Group["id"]} id
+ * @param {Team["id"]} idTeam
  * @param {Number} leagueId
  * @param {Number} season
  * @returns {Promise<Team>}
@@ -135,13 +141,13 @@ function getTeamOfGroup(id, idTeam, leagueId, season) {
 
 /**
  * Remove a team from a group
- * @param {Number} id
- * @param {Number} idTeam
+ * @param {Group["id"]} id
+ * @param {Team["id"]} idTeam
  * @param {Number} leagueId
  * @param {Number} season
  * @returns {Promise<void>}
  */
-function removeTeamsFromGroup(id, idTeam, leagueId, season) {
+function removeTeamFromGroup(id, idTeam, leagueId, season) {
     const group = groups.find(g => g.id === id);
     group.teams = group.teams.filter(t => t.id !== idTeam || t.leagueId !== leagueId || t.season !== season);
 
@@ -155,7 +161,7 @@ function removeTeamsFromGroup(id, idTeam, leagueId, season) {
  */
 function createUser(name) {
     const newUser = {
-        id: nextUserId++,
+        id: (nextUserId++).toString(),
         name,
         token: crypto.randomUUID()
     };
@@ -180,7 +186,7 @@ export default {
     deleteGroup,
     addTeamsToGroup,
     getTeamOfGroup,
-    removeTeamsFromGroup,
+    removeTeamFromGroup,
     createUser,
     resetData
 }

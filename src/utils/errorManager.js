@@ -22,6 +22,7 @@ export const errors = {
     a10: { status: 400, message: "Invalid season" },
     a11: { status: 400, message: "No such team in this group" },
     a12: { status: 400, message: "User name missing" },
+    a13: { status: 400, message: "All teams already exist in this group" },
 
     h1: { status: 401, message: "Invalid authentication header" },
 

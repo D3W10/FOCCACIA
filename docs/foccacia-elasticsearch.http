@@ -1,0 +1,17 @@
+@url = http://localhost:9200
+
+### Create Indexes
+
+PUT  {{url}}/users
+
+###
+
+PUT  {{url}}/groups
+
+
+
+
+
+### Delete all data
+
+DELETE {{url}}/_all

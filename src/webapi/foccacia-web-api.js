@@ -49,7 +49,7 @@ export default (service) => ({
      * @param {Response} res 
      */
     editGroup: (req, res) => {
-        handleError(res, () => service.editGroup(+req.params.id, {
+        handleError(res, () => service.editGroup(req.params.id, {
             name: req.body.name,
             description: req.body.description
         }, req.headers.authorization));
@@ -68,8 +68,8 @@ export default (service) => ({
      * @param {Response} res 
      */
     deleteGroup: (req, res) => {
-        handleError(res, () => {
-            service.deleteGroup(+req.params.id, req.headers.authorization);
+        handleError(res, async () => {
+            await service.deleteGroup(req.params.id, req.headers.authorization);
             return "Group deleted successfully";
         });
     },
@@ -79,7 +79,7 @@ export default (service) => ({
      * @param {Response} res 
      */
     getGroupDetails: (req, res) => {
-        handleError(res, () => service.getGroupDetails(+req.params.id, req.headers.authorization));
+        handleError(res, () => service.getGroupDetails(req.params.id, req.headers.authorization));
     },
 
     /**
@@ -87,8 +87,8 @@ export default (service) => ({
      * @param {Response} res 
      */
     addTeamsToGroup: (req, res) => {
-        handleError(res, () => {
-            service.addTeamsToGroup(+req.params.id, req.body.teams, req.headers.authorization);
+        handleError(res, async () => {
+            await service.addTeamsToGroup(req.params.id, req.body.teams, req.headers.authorization);
             return "Teams added to group successfully";
         });
     },
@@ -98,8 +98,8 @@ export default (service) => ({
      * @param {Response} res 
      */
     removeTeamFromGroup: (req, res) => {
-        handleError(res, () => {
-            service.removeTeamFromGroup(+req.params.id, +req.params.idt, +req.params.idl, +req.params.season, req.headers.authorization);
+        handleError(res, async () => {
+            await service.removeTeamFromGroup(req.params.id, +req.params.idt, +req.params.idl, +req.params.season, req.headers.authorization);
             return "Team removed from group successfully";
         });
     },

@@ -80,7 +80,7 @@ export default (api, foccacia) => {
         },
 
         editGroup: async (id, updates = {}, auth) => {
-            if (!id || isNaN(id))
+            if (!id)
                 return throwError("a5");
             else if (!updates.name && !updates.description)
                 return throwError("a6");
@@ -100,7 +100,7 @@ export default (api, foccacia) => {
         },
 
         deleteGroup: async (id, auth) => {
-            if (!id || isNaN(id))
+            if (!id)
                 return throwError("a5");
 
             const token = getAuth(auth);
@@ -111,7 +111,7 @@ export default (api, foccacia) => {
         },
 
         getGroupDetails: async (id, auth) => {
-            if (!id || isNaN(id))
+            if (!id)
                 return throwError("a5");
 
             const token = getAuth(auth);
@@ -122,21 +122,25 @@ export default (api, foccacia) => {
         },
 
         addTeamsToGroup: async (id, teams = [], auth) => {
-            if (!id || isNaN(id))
+            if (!id)
                 return throwError("a5");
             else if (!Array.isArray(teams) || !teams.every(t => typeof t.id === "number" && typeof t.leagueId === "number" && typeof t.season === "number"))
                 return throwError("a4");
 
             const token = getAuth(auth);
             const user = await getUserSafely(token);
-            await getGroupSafely(id, user.id);
+            const group = await getGroupSafely(id, user.id);
             const pTeams = await teamTransformer(teams);
+            const teamsToAdd = pTeams.filter(t => !group.teams.some(gt => Object.keys(gt).every(key => gt[key] === t[key])));
 
-            return foccacia.addTeamsToGroup(id, pTeams);
+            if (teamsToAdd.length === 0)
+                return throwError("a13");
+
+            return foccacia.addTeamsToGroup(id, teamsToAdd);
         },
 
         removeTeamFromGroup: async (id, idt, idl, season, auth) => {
-            if (!id || isNaN(id))
+            if (!id)
                 return throwError("a5");
             else if (!idt || isNaN(idt))
                 return throwError("a2");
@@ -152,7 +156,7 @@ export default (api, foccacia) => {
             if (!foccacia.getTeamOfGroup(id, idt, idl, season))
                 return throwError("a11");
 
-            return foccacia.removeTeamsFromGroup(id, idt, idl, season);
+            return foccacia.removeTeamFromGroup(id, idt, idl, season);
         },
 
         createUser: async name => {

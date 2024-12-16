@@ -4,7 +4,7 @@ import webApiBuilder from "./foccacia-web-api.js";
 import webUiBuilder from "./foccacia-web-ui.js";
 import serviceBuilder from "../service/foccacia-services.js";
 import api from "../data/fapi-teams-data.js";
-import foccacia from "../data/foccacia-data-mem.js";
+import foccacia from "../data/foccacia-elastic.js";
 
 const PORT = 8080;
 const app = express();
@@ -16,6 +16,7 @@ app.set("view engine", "hbs");
 app.set("views", "views");
 
 hbs.registerPartials("./views/components");
+hbs.registerPartials("./views/common");
 
 const service = serviceBuilder(api, foccacia);
 const webApi = webApiBuilder(service);
