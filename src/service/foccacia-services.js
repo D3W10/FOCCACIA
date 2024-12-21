@@ -38,7 +38,7 @@ export default (api, foccacia) => {
         return group;
     }
 
-    function getAuth(header) {
+    async function getAuth(header) {
         const auth = header.split(" ", 2);
     
         if (auth.length < 2 || auth[0] !== "Bearer")
@@ -72,7 +72,7 @@ export default (api, foccacia) => {
             else if (!Array.isArray(teams) || !teams.every(t => typeof t.id === "number" && typeof t.leagueId === "number" && typeof t.season === "number"))
                 return throwError("a4");
 
-            const token = getAuth(auth);
+            const token = await getAuth(auth);
             const user = await getUserSafely(token);
             const pTeams = await teamTransformer(teams);
 
@@ -85,7 +85,7 @@ export default (api, foccacia) => {
             else if (!updates.name && !updates.description)
                 return throwError("a6");
 
-            const token = getAuth(auth);
+            const token = await getAuth(auth);
             const user = await getUserSafely(token);
             await getGroupSafely(id, user.id);
 
@@ -93,7 +93,7 @@ export default (api, foccacia) => {
         },
 
         listGroups: async auth => {
-            const token = getAuth(auth);
+            const token = await getAuth(auth);
             const user = await getUserSafely(token);
 
             return (await foccacia.getGroupsByUser(user.id)).map(g => g.id);
@@ -103,7 +103,7 @@ export default (api, foccacia) => {
             if (!id)
                 return throwError("a5");
 
-            const token = getAuth(auth);
+            const token = await getAuth(auth);
             const user = await getUserSafely(token);
             await getGroupSafely(id, user.id);
 
@@ -114,7 +114,7 @@ export default (api, foccacia) => {
             if (!id)
                 return throwError("a5");
 
-            const token = getAuth(auth);
+            const token = await getAuth(auth);
             const user = await getUserSafely(token);
             const { userId, ...group } = await getGroupSafely(id, user.id);
 
@@ -127,7 +127,7 @@ export default (api, foccacia) => {
             else if (!Array.isArray(teams) || !teams.every(t => typeof t.id === "number" && typeof t.leagueId === "number" && typeof t.season === "number"))
                 return throwError("a4");
 
-            const token = getAuth(auth);
+            const token = await getAuth(auth);
             const user = await getUserSafely(token);
             const group = await getGroupSafely(id, user.id);
             const pTeams = await teamTransformer(teams);
@@ -149,7 +149,7 @@ export default (api, foccacia) => {
             else if (!season || isNaN(season))
                 return throwError("a10");
 
-            const token = getAuth(auth);
+            const token = await getAuth(auth);
             const user = await getUserSafely(token);
             await getGroupSafely(id, user.id);
 

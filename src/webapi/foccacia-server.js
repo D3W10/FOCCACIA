@@ -15,8 +15,30 @@ app.use(express.static("public"));
 app.set("view engine", "hbs");
 app.set("views", "views");
 
+//#region Handlebars
+
 hbs.registerPartials("./views/components");
 hbs.registerPartials("./views/common");
+hbs.registerHelper("eq", (a, b) => a === b);
+hbs.registerHelper("not", v => !v);
+hbs.registerHelper("and", function () {
+    return Array.prototype.slice.call(arguments, 0, -1).every(Boolean);
+});
+hbs.registerHelper("or", function () {
+    return Array.prototype.slice.call(arguments, 0, -1).some(Boolean);
+});
+hbs.registerHelper("concat", function () {
+    let outStr = "";
+
+    for (let arg in arguments) {
+        if (typeof arguments[arg] != "object")
+            outStr += arguments[arg];
+    }
+
+    return outStr;
+});
+
+//#endregion
 
 const service = serviceBuilder(api, foccacia);
 const webApi = webApiBuilder(service);
@@ -42,10 +64,13 @@ app.post("/api/users", webApi.createUser);
 //#region Website Endpoints
 
 app.get("/", webUi.home);
-app.get("/search/teams", webUi.searchTeams);
-app.get("/search/leagues", webUi.searchLeagues);
 app.get("/signup", webUi.signup);
 app.get("/login", webUi.login);
+app.get("/groups", webUi.listGroups);
+app.get("/groups/create", webUi.createGroupForm);
+app.post("/groups/create", webUi.createGroup);
+app.get("/groups/:id/teams", webUi.searchTeams);
+app.get("/groups/:id/teams/:team/leagues", webUi.getLeagues);
 
 //#endregion
 

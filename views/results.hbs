@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {{> head}}
+        <title>FOCCACIA | Teams</title>
+    </head>
+    <body>
+        {{> navbar}}
+        <div class="w-full min-h-full flex justify-center items-start">
+            <div class="w-full max-w-8xl my-20 flex flex-col rounded-2xl shadow-md">
+                {{#each teams}}
+                    <div class="w-full px-4 py-3 flex justify-between items-center first:rounded-t-2xl last:rounded-b-2xl odd:bg-stone-200 even:bg-stone-100">
+                        <div class="flex justify-center items-center space-x-4">
+                            <img src="{{logo}}" class="w-16 h-16 object-contain" />
+                            <p class="text-2xl">{{name}}</p>
+                            <p>{{country}}</p>
+                        </div>
+                        {{#> button href=(concat "/teams/" id "/leagues")}}Add to group{{/button}}
+                    </div>
+                {{/each}}
+            </div>
+        </div>
+    </body>
+</html>

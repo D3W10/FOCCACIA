@@ -1,9 +1,9 @@
-<div class="flex justify-center items-center absolute top-0 left-0 right-0 border-b border-stone-600/30 shadow-md shadow-stone-600/10 z-50">
+<div class="flex justify-center items-center {{#if fixed}}fixed{{else}}sticky{{/if}} top-0 left-0 right-0 bg-white border-b border-stone-600/30 shadow-md shadow-stone-600/10 z-50">
     <div class="w-full max-w-8xl px-6 py-4 flex justify-between items-center">
-        <div class="flex items-center space-x-2">
+        <a href="/" class="flex items-center font-bold text-lg space-x-2">
             {{> ball size="size-4"}}
-            <a href="/" class="font-bold text-lg">FOCCACIA</a>
-        </div>
+            <span>FOCCACIA</span>
+        </a>
         <div class="flex items-center space-x-4">
             {{#> button href="/signup"}}Create account{{/button}}
             {{#> button href="/login" secondary=true}}Log In{{/button}}

@@ -1,5 +1,7 @@
 {{#if secondary}}
-   <a href="{{href}}" class="px-5 py-1.5 font-semibold text-center text-black bg-stone-200 rounded-lg shadow-md inset-shadow-lg inset-shadow-black/80 ring ring-stone-400 inset-ring-2 inset-ring-black/10 {{class}}">{{> @partial-block }}</a>
+    <a href="{{href}}" class="px-5 py-1.5 font-semibold text-center text-black bg-stone-200 rounded-lg shadow-md inset-shadow-lg inset-shadow-black/80 ring ring-stone-400 inset-ring-2 inset-ring-black/10 {{class}}">{{> @partial-block }}</a>
+{{else if submit}}
+    <input type="submit" value="{{> @partial-block }}" class="px-5 py-1.5 font-semibold text-center text-white bg-orange-600 rounded-lg shadow-md inset-shadow-lg inset-shadow-white/20 ring ring-orange-600 inset-ring-2 inset-ring-white/30 {{class}}" />
 {{else}}
     <a href="{{href}}" class="px-5 py-1.5 font-semibold text-center text-white bg-orange-600 rounded-lg shadow-md inset-shadow-lg inset-shadow-white/20 ring ring-orange-600 inset-ring-2 inset-ring-white/30 {{class}}">{{> @partial-block }}</a>
 {{/if}}
