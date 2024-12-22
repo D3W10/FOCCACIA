@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {{> head}}
+        <title>FOCCACIA | Search Teams</title>
+    </head>
+    <body>
+        {{> navbar}}
+        <div class="w-full min-h-full flex flex-col justify-center items-center">
+            <h1 class="mb-14 text-6xl font-extrabold">Search Teams</h1>
+            <form method="get" class="w-120 flex items-center space-x-2">
+                {{> input type="text" name="team" placeholder="Manchester United" required="required" class="px-4 py-3 text-xl rounded-xl shadow-md"}}
+                {{#> button submit=true class="h-10"}}Search{{/button}}
+            </form>
+        </div>
+    </body>
+</html>

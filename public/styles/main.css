@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@theme {
+    --font-display: "Inter";
+    --spacing-8xl: 90rem;
+}
+
+html, body {
+    @apply w-screen h-screen font-display;
+}

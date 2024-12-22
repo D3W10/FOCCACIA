@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {{> head}}
+        <title>FOCCACIA | Sign Up</title>
+    </head>
+    <body class="w-full min-h-full flex flex-col justify-center items-center">
+        {{#> signin btnText="Sign Up" callback="#"}}
+            Already have an account? <a href="/login" class="font-bold text-orange-600">Log in</a> instead
+        {{/signin}}
+    </body>
+</html>

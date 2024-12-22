@@ -6,17 +6,21 @@
     "scripts": {
         "start": "node .",
         "nodemon": "nodemon",
-        "test": "mocha --recursive"
+        "test": "mocha --recursive",
+        "style": "npx @tailwindcss/cli -i ./public/styles/main.css -o ./public/styles/output.css --watch"
     },
-    "main": "src/webapi/server.js",
+    "main": "src/webapi/foccacia-server.js",
     "type": "module",
     "dependencies": {
         "chai-as-promised": "^8.0.1",
-        "express": "^4.21.1"
+        "express": "^4.21.2",
+        "hbs": "^4.2.0"
     },
     "devDependencies": {
+        "@tailwindcss/cli": "^4.0.0-beta.8",
         "chai": "^5.1.1",
         "mocha": "^10.7.3",
-        "nodemon": "^3.1.7"
+        "nodemon": "^3.1.9",
+        "tailwindcss": "^4.0.0-beta.8"
     }
 }

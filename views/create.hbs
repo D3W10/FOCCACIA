@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {{> head}}
+        <title>FOCCACIA | Create Group</title>
+    </head>
+    <body>
+        {{> navbar}}
+        <div class="w-full flex flex-col justify-start items-center">
+            <form method="post" class="w-full max-w-8xl my-20 flex flex-col space-y-4">
+                {{> input type="text" name="name" placeholder="Name" required="required"}}
+                {{> input type="area" name="description" placeholder="Description" required="required"}}
+                {{#> button submit=true}}Create{{/button}}
+            </form>
+        </div>
+    </body>
+</html>

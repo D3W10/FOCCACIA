@@ -31,75 +31,139 @@ export default (api, foccacia) => {
     async function getGroupSafely(id, userId) {
         const group = await foccacia.getGroupById(id);
         if (!group)
-            return throwError("s3");
+            return throwError("a7");
         else if (group.userId !== userId)
-            return throwError("w4");
+            return throwError("a8");
 
         return group;
     }
 
+    async function getAuth(header) {
+        const auth = header.split(" ", 2);
+    
+        if (auth.length < 2 || auth[0] !== "Bearer")
+            return throwError("h1");
+        else
+            return auth[1];
+    }
+
     return {
         searchTeams: async name => {
+            if (!name)
+                return throwError("a1");
+
             const teams = await api.getTeamsByName(name);
 
             return teams ?? throwError("s1");
         },
 
         searchLeagues: async team => {
+            if (!team || isNaN(team))
+                return throwError("a2");
+
             const leagues = await api.getLeaguesByTeam(team);
 
             return leagues ?? throwError("s1");
         },
 
-        createGroup: async (name, description = "", teams = [], token) => {
+        createGroup: async (name, description = "", teams = [], auth) => {
+            if (!name)
+                return throwError("a3");
+            else if (!Array.isArray(teams) || !teams.every(t => typeof t.id === "number" && typeof t.leagueId === "number" && typeof t.season === "number"))
+                return throwError("a4");
+
+            const token = await getAuth(auth);
             const user = await getUserSafely(token);
             const pTeams = await teamTransformer(teams);
 
             return foccacia.createGroup(name, description, pTeams, user.id);
         },
 
-        editGroup: async (id, updates = {}, token) => {
+        editGroup: async (id, updates = {}, auth) => {
+            if (!id)
+                return throwError("a5");
+            else if (!updates.name && !updates.description)
+                return throwError("a6");
+
+            const token = await getAuth(auth);
             const user = await getUserSafely(token);
             await getGroupSafely(id, user.id);
 
             return foccacia.updateGroup(id, updates);
         },
 
-        listGroups: async token => {
+        listGroups: async auth => {
+            const token = await getAuth(auth);
             const user = await getUserSafely(token);
 
             return (await foccacia.getGroupsByUser(user.id)).map(g => g.id);
         },
 
-        deleteGroup: async (id, token) => {
+        deleteGroup: async (id, auth) => {
+            if (!id)
+                return throwError("a5");
+
+            const token = await getAuth(auth);
             const user = await getUserSafely(token);
             await getGroupSafely(id, user.id);
 
             return foccacia.deleteGroup(id);
         },
 
-        getGroupDetails: async (id, token) => {
+        getGroupDetails: async (id, auth) => {
+            if (!id)
+                return throwError("a5");
+
+            const token = await getAuth(auth);
             const user = await getUserSafely(token);
             const { userId, ...group } = await getGroupSafely(id, user.id);
 
             return group;
         },
 
-        addTeamsToGroup: async (id, teams = [], token) => {
+        addTeamsToGroup: async (id, teams = [], auth) => {
+            if (!id)
+                return throwError("a5");
+            else if (!Array.isArray(teams) || !teams.every(t => typeof t.id === "number" && typeof t.leagueId === "number" && typeof t.season === "number"))
+                return throwError("a4");
+
+            const token = await getAuth(auth);
             const user = await getUserSafely(token);
-            await getGroupSafely(id, user.id);
+            const group = await getGroupSafely(id, user.id);
             const pTeams = await teamTransformer(teams);
+            const teamsToAdd = pTeams.filter(t => !group.teams.some(gt => Object.keys(gt).every(key => gt[key] === t[key])));
 
-            return foccacia.addTeamsToGroup(id, pTeams);
+            if (teamsToAdd.length === 0)
+                return throwError("a13");
+
+            return foccacia.addTeamsToGroup(id, teamsToAdd);
         },
 
-        removeTeamFromGroup: async (id, idt, idl, season, token) => {
+        removeTeamFromGroup: async (id, idt, idl, season, auth) => {
+            if (!id)
+                return throwError("a5");
+            else if (!idt || isNaN(idt))
+                return throwError("a2");
+            else if (!idl || isNaN(idl))
+                return throwError("a9");
+            else if (!season || isNaN(season))
+                return throwError("a10");
+
+            const token = await getAuth(auth);
             const user = await getUserSafely(token);
             await getGroupSafely(id, user.id);
 
-            return foccacia.removeTeamsFromGroup(id, idt, idl, season);
+            if (!foccacia.getTeamOfGroup(id, idt, idl, season))
+                return throwError("a11");
+
+            return foccacia.removeTeamFromGroup(id, idt, idl, season);
         },
 
-        createUser: async name => foccacia.createUser(name)
+        createUser: async name => {
+            if (!name)
+                return throwError("a12");
+
+            return foccacia.createUser(name);
+        }
     };
 };

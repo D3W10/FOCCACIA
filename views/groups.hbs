@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {{> head}}
+        <title>FOCCACIA | Groups</title>
+    </head>
+    <body>
+        {{> navbar}}
+        <div class="w-full flex flex-col justify-start items-center">
+            <div class="w-full max-w-8xl my-20 flex flex-col">
+                {{#if created}}
+                    <div class="w-full mb-4 px-4 py-3 rounded-xl bg-stone-200">
+                        <p class="font-semibold">Group created successfully!</p>
+                    </div>
+                {{/if}}
+                <div class="w-full max-w-8xl mb-4 flex justify-end">
+                    {{#> button href="/groups/create"}}Create group{{/button}}
+                </div>
+                {{#if hasGroups}}
+                    <div class="flex flex-col rounded-2xl shadow-md">
+                        {{#each groups}}
+                            <div class="w-full px-4 py-3 flex justify-between items-center first:rounded-t-2xl last:rounded-b-2xl odd:bg-stone-200 even:bg-stone-100">
+                                <div class="flex flex-col">
+                                    <p class="text-2xl">{{this.name}}</p>
+                                    <p>{{this.description}}</p>
+                                </div>
+                                {{#> button secondary=true href=(concat "/groups/" this.id)}}Select this Group{{/button}}
+                            </div>
+                        {{/each}}
+                    </div>
+                {{else}}
+                    <p class="text-2xl">You have no groups</p>
+                {{/if}}
+            </div>
+        </div>
+    </body>
+</html>

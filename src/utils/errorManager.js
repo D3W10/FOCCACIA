@@ -9,20 +9,25 @@
  */
 export const errors = {
     "-1": { status: 500, message: "Unknown error" },
-    w1: { status: 400, message: "Group name missing" },
-    w2: { status: 400, message: "No fields to update were specified" },
-    w3: { status: 401, message: "Unauthorized" },
-    w4: { status: 403, message: "Forbidden access" },
-    w5: { status: 400, message: "Invalid ID" },
-    w6: { status: 400, message: "User name missing" },
-    w7: { status: 400, message: "Club name missing" },
-    w8: { status: 400, message: "Invalid teams array" },
-    w9: { status: 401, message: "Invalid authentication header" },
-    w10: { status: 400, message: "Invalid season" },
+
+    a1: { status: 400, message: "Team name missing" },
+    a2: { status: 400, message: "Invalid team ID" },
+    a3: { status: 400, message: "Group name missing" },
+    a4: { status: 400, message: "Invalid teams data" },
+    a5: { status: 400, message: "Invalid group ID" },
+    a6: { status: 400, message: "No fields to update were specified" },
+    a7: { status: 404, message: "Group not found" },
+    a8: { status: 403, message: "Forbidden access" },
+    a9: { status: 400, message: "Invalid league ID" },
+    a10: { status: 400, message: "Invalid season" },
+    a11: { status: 400, message: "No such team in this group" },
+    a12: { status: 400, message: "User name missing" },
+    a13: { status: 400, message: "All teams already exist in this group" },
+
+    h1: { status: 401, message: "Invalid authentication header" },
+
     s1: { status: 502, message: "External API error" },
-    s2: { status: 404, message: "User not found" },
-    s3: { status: 404, message: "Group not found" },
-    d1: { status: 400, message: "No such team in this group" }
+    s2: { status: 404, message: "User not found" }
 }
 
 export function error(res, code) {

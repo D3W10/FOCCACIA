@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {{> head}}
+        <title>FOCCACIA</title>
+    </head>
+    <body>
+        {{> navbar fixed=true}}
+        <div class="w-full min-h-full flex justify-center items-center">
+            <div class="w-160 flex">
+                <h1 class="mt-8 mr-8 text-6xl font-extrabold">{{status}}</h1>
+                <div class="py-8 pl-8 border-l-4 border-stone-200 space-y-16">
+                    <p class="pb-10 text-xl">An error has occurred in the website. Try again and if the error persists, contact the website administrator.</p>
+                    {{#> button href="/"}}Go to the home page{{/button}}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

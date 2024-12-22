@@ -1,0 +1,31 @@
+@url = http://localhost:9200
+
+### Create indexes
+
+PUT  {{url}}/users
+
+###
+
+PUT  {{url}}/groups
+
+
+
+
+
+### Create default user
+
+POST {{url}}/users/_doc
+Content-Type: application/json
+
+{
+    "name": "User",
+    "token": "f37b4092-c404-4d21-9c79-acbaf879b23c"
+}
+
+
+
+
+
+### Delete all data
+
+DELETE {{url}}/_all
