@@ -8,9 +8,9 @@
         {{> navbar}}
         <div class="w-full min-h-full flex flex-col justify-center items-center">
             <h1 class="mb-14 text-6xl font-extrabold">Search Teams</h1>
-            <form method="get" action="/search/teams">
-                <input type="text" name="team" placeholder="Manchester United" class="w-120 px-4 py-3 text-xl bg-stone-100 border-2 border-black/15 focus-within:border-orange-600 rounded-xl shadow-md ring-0 focus-within:ring-4 ring-orange-600/20 focus-within:outline-0 transition duration-200" />
-                <input type="submit" value="Search" />
+            <form method="get" class="w-120 flex items-center space-x-2">
+                {{> input type="text" name="team" placeholder="Manchester United" required="required" class="px-4 py-3 text-xl rounded-xl shadow-md"}}
+                {{#> button submit=true class="h-10"}}Search{{/button}}
             </form>
         </div>
     </body>

@@ -15,6 +15,7 @@ async function handleError(res, tryFunc) {
     catch (e) {
         const status = e.code ? errors[e.code].status : 500;
 
+        console.error(e);
         res.status(status).render("error", { status });
     }
 }
@@ -77,7 +78,27 @@ export default (service) => ({
     createGroup: (req, res) => {
         handleError(res, async () => {
             await service.createGroup(req.body.name, req.body.description, [], BEARER_TOKEN);
+            
             res.redirect("/groups?success=true");
+        });
+    },
+
+    /**
+     * @param {Request} req 
+     * @param {Response} res 
+     */
+    getGroupDetails: (req, res) => {
+        handleError(res, async () => {
+            const group = await service.getGroupDetails(req.params.id, BEARER_TOKEN);
+
+            res.render("group", {
+                id: req.params.id,
+                description: group.description,
+                added: req.query.addSuccess === "true",
+                removed: req.query.removeSuccess === "true",
+                hasTeams: group.teams.length > 0,
+                teams: group.teams
+            });
         });
     },
 
@@ -101,8 +122,43 @@ export default (service) => ({
      * @param {Response} res 
      */
     getLeagues: (req, res) => {
-        handleError(res, async () => res.render("leagues", {
-            leagues: await service.searchLeagues(req.params.team)
-        }));
+        handleError(res, async () => {
+            const leagues = await service.searchLeagues(req.params.team);
+
+            leagues.forEach(l => l.seasons.reverse());
+
+            res.render("leagues", {
+                leagues
+            });
+        });
+    },
+
+    /**
+     * @param {Request} req 
+     * @param {Response} res 
+     */
+    addTeamsToGroup: (req, res) => {
+        handleError(res, async () => {
+            await service.addTeamsToGroup(req.params.id, [{
+                id: +req.params.team,
+                leagueId: +req.body.id,
+                season: +req.body.season
+            }], BEARER_TOKEN);
+
+            console.log("GTETEETTETE")
+            res.redirect(`/groups/${req.params.id}?addSuccess=true`);
+        });
+    },
+
+    /**
+     * @param {Request} req 
+     * @param {Response} res 
+     */
+    removeTeamsFromGroup: (req, res) => {
+        handleError(res, async () => {
+            await service.removeTeamFromGroup(req.params.id, req.params.team, req.params.league, req.params.season, BEARER_TOKEN);
+
+            res.redirect(`/groups/${req.params.id}?removeSuccess=true`);
+        });
     }
 });

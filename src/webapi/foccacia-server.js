@@ -10,6 +10,7 @@ const PORT = 8080;
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 app.set("view engine", "hbs");
@@ -69,8 +70,11 @@ app.get("/login", webUi.login);
 app.get("/groups", webUi.listGroups);
 app.get("/groups/create", webUi.createGroupForm);
 app.post("/groups/create", webUi.createGroup);
+app.get("/groups/:id", webUi.getGroupDetails);
 app.get("/groups/:id/teams", webUi.searchTeams);
 app.get("/groups/:id/teams/:team/leagues", webUi.getLeagues);
+app.post("/groups/:id/teams/:team/leagues", webUi.addTeamsToGroup);
+app.post("/groups/:id/teams/:team/leagues/:league/seasons/:season", webUi.addTeamsToGroup);
 
 //#endregion
 
