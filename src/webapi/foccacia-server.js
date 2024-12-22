@@ -4,6 +4,7 @@ import webApiBuilder from "./foccacia-web-api.js";
 import webUiBuilder from "./foccacia-web-ui.js";
 import serviceBuilder from "../service/foccacia-services.js";
 import api from "../data/fapi-teams-data.js";
+// import fakeApi from "../data/fapi-teams-data-fake.js";
 import foccacia from "../data/foccacia-elastic.js";
 
 const PORT = 8080;
@@ -62,7 +63,7 @@ app.post("/api/users", webApi.createUser);
 
 //#endregion
 
-//#region Website Endpoints
+//#region UI Endpoints
 
 app.get("/", webUi.home);
 app.get("/signup", webUi.signup);
@@ -71,10 +72,13 @@ app.get("/groups", webUi.listGroups);
 app.get("/groups/create", webUi.createGroupForm);
 app.post("/groups/create", webUi.createGroup);
 app.get("/groups/:id", webUi.getGroupDetails);
+app.get("/groups/:id/edit", webUi.editGroupForm);
+app.post("/groups/:id/edit", webUi.editGroup);
+app.post("/groups/:id/delete", webUi.deleteGroup);
 app.get("/groups/:id/teams", webUi.searchTeams);
 app.get("/groups/:id/teams/:team/leagues", webUi.getLeagues);
-app.post("/groups/:id/teams/:team/leagues", webUi.addTeamsToGroup);
-app.post("/groups/:id/teams/:team/leagues/:league/seasons/:season", webUi.addTeamsToGroup);
+app.post("/groups/:id/teams/:team/leagues", webUi.addTeamToGroup);
+app.post("/groups/:id/teams/:team/leagues/:league/seasons/:season", webUi.removeTeamFromGroup);
 
 //#endregion
 

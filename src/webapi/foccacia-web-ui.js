@@ -106,6 +106,49 @@ export default (service) => ({
      * @param {Request} req 
      * @param {Response} res 
      */
+    editGroupForm: (req, res) => {
+        handleError(res, async () => {
+            const group = await service.getGroupDetails(req.params.id, BEARER_TOKEN);
+
+            res.render("edit", {
+                id: req.params.id,
+                name: group.name,
+                description: group.description
+            });
+        });
+    },
+
+    /**
+     * @param {Request} req 
+     * @param {Response} res 
+     */
+    editGroup: (req, res) => {
+        handleError(res, async () => {
+            await service.editGroup(req.params.id, {
+                name: req.body.name,
+                description: req.body.description
+            }, BEARER_TOKEN);
+
+            res.redirect("/groups/" + req.params.id);
+        });
+    },
+
+    /**
+     * @param {Request} req 
+     * @param {Response} res 
+     */
+    deleteGroup: (req, res) => {
+        handleError(res, async () => {
+            await service.deleteGroup(req.params.id, BEARER_TOKEN);
+
+            res.redirect("/");
+        });
+    },
+
+    /**
+     * @param {Request} req 
+     * @param {Response} res 
+     */
     searchTeams: (req, res) => {
         handleError(res, async () => {
             if (!req.query.team)
@@ -137,7 +180,7 @@ export default (service) => ({
      * @param {Request} req 
      * @param {Response} res 
      */
-    addTeamsToGroup: (req, res) => {
+    addTeamToGroup: (req, res) => {
         handleError(res, async () => {
             await service.addTeamsToGroup(req.params.id, [{
                 id: +req.params.team,
@@ -145,7 +188,6 @@ export default (service) => ({
                 season: +req.body.season
             }], BEARER_TOKEN);
 
-            console.log("GTETEETTETE")
             res.redirect(`/groups/${req.params.id}?addSuccess=true`);
         });
     },
@@ -154,9 +196,9 @@ export default (service) => ({
      * @param {Request} req 
      * @param {Response} res 
      */
-    removeTeamsFromGroup: (req, res) => {
+    removeTeamFromGroup: (req, res) => {
         handleError(res, async () => {
-            await service.removeTeamFromGroup(req.params.id, req.params.team, req.params.league, req.params.season, BEARER_TOKEN);
+            await service.removeTeamFromGroup(req.params.id, +req.params.team, +req.params.league, +req.params.season, BEARER_TOKEN);
 
             res.redirect(`/groups/${req.params.id}?removeSuccess=true`);
         });

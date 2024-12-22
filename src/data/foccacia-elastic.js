@@ -64,7 +64,7 @@ async function fetchData(path, method = "GET", body = undefined) {
 async function getUserByToken(token){
     const data = await fetchData(`users/_search?q=token:"${token}"`);
 
-    return data ? parseUser(data.hits.hits[0]) : undefined;
+    return data && data.hits.hits.length > 0 ? parseUser(data.hits.hits[0]) : undefined;
 }
 
 /**
@@ -113,7 +113,8 @@ async function updateGroup(id, changes) {
         Object.entries(changes).filter(([_, value]) => value !== undefined)
     ));
 
-    await fetchData(`groups/_doc/${id}`, "PUT", group);
+    delete group.id
+    await fetchData(`groups/_update/${id}`, "POST", { doc: group });
 
     return getSafeGroup(group);
 }
