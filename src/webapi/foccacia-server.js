@@ -15,12 +15,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 app.set("view engine", "hbs");
-app.set("views", "views");
+app.set("views", "views/pages");
 
 //#region Handlebars
 
 hbs.registerPartials("./views/components");
 hbs.registerPartials("./views/common");
+hbs.registerPartials("./views/icons");
 hbs.registerHelper("eq", (a, b) => a === b);
 hbs.registerHelper("not", v => !v);
 hbs.registerHelper("and", function () {
@@ -74,11 +75,9 @@ app.post("/groups/create", webUi.createGroup);
 app.get("/groups/:id", webUi.getGroupDetails);
 app.get("/groups/:id/edit", webUi.editGroupForm);
 app.post("/groups/:id/edit", webUi.editGroup);
-app.post("/groups/:id/delete", webUi.deleteGroup);
 app.get("/groups/:id/teams", webUi.searchTeams);
 app.get("/groups/:id/teams/:team/leagues", webUi.getLeagues);
 app.post("/groups/:id/teams/:team/leagues", webUi.addTeamToGroup);
-app.post("/groups/:id/teams/:team/leagues/:league/seasons/:season", webUi.removeTeamFromGroup);
 
 //#endregion
 

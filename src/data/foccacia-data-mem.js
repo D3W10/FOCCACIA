@@ -6,6 +6,7 @@
  * @property {String} league
  * @property {Number} season
  * @property {String} stadium
+ * @property {String} logo
  *
  * @typedef {Object} Group
  * @property {String} id

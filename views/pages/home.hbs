@@ -11,11 +11,8 @@
             <h1 class="mt-10 text-6xl font-extrabold">FOCCACIA</h1>
             <p class="mt-4 text-lg">Search for teams, create groups and more!</p>
             <div class="mt-8 flex space-x-4">
-                {{#> button href="/groups"}}Go to groups{{/button}}
-                <!--
-                {{#> button href="/signup"}}Start Now{{/button}}
-                {{#> button href="/search/teams" secondary=true}}Search Teams{{/button}}
-                -->
+                {{#> button anchor=true href="/signup"}}Start Now{{/button}}
+                {{#> button anchor=true secondary=true href="/search/teams"}}Search Teams{{/button}}
             </div>
         </div>
     </body>

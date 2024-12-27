@@ -1,7 +1,29 @@
-{{#if secondary}}
-    <a href="{{href}}" class="px-5 py-1.5 font-semibold text-center text-black bg-stone-200 rounded-lg shadow-md inset-shadow-lg inset-shadow-black/80 ring ring-stone-400 inset-ring-2 inset-ring-black/10 cursor-pointer {{class}}">{{> @partial-block }}</a>
-{{else if submit}}
-    <input type="submit" value="{{> @partial-block }}" class="px-5 py-1.5 font-semibold text-center text-white bg-orange-600 rounded-lg shadow-md inset-shadow-lg inset-shadow-white/20 ring ring-orange-600 inset-ring-2 inset-ring-white/30 cursor-pointer {{class}}" />
+{{#if (not link)}}
+    {{#if (not anchor)}}
+        {{#if (not secondary)}}
+            <button onclick="{{onclick}}" class="px-5 py-1.5 inline-block font-semibold text-center text-white bg-orange-600 rounded-lg shadow-md inset-shadow-lg inset-shadow-white/20 ring ring-orange-600 inset-ring-2 inset-ring-white/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 cursor-pointer {{class}}">{{> @partial-block }}</button>
+        {{else}}
+            <button onclick="{{onclick}}" class="px-5 py-1.5 inline-block font-semibold text-center text-black bg-stone-200 rounded-lg shadow-md inset-shadow-lg inset-shadow-white/80 ring ring-stone-400 inset-ring-2 inset-ring-black/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 cursor-pointer {{class}}">{{> @partial-block }}</button>
+        {{/if}}
+    {{else}}
+        {{#if (not secondary)}}
+            <a href="{{href}}" class="px-5 py-1.5 inline-block font-semibold text-center text-white bg-orange-600 rounded-lg shadow-md inset-shadow-lg inset-shadow-white/20 ring ring-orange-600 inset-ring-2 inset-ring-white/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 cursor-pointer {{class}}">{{> @partial-block }}</a>
+        {{else}}
+            <a href="{{href}}" class="px-5 py-1.5 inline-block font-semibold text-center text-black bg-stone-200 rounded-lg shadow-md inset-shadow-lg inset-shadow-white/80 ring ring-stone-400 inset-ring-2 inset-ring-black/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 cursor-pointer {{class}}">{{> @partial-block }}</a>
+        {{/if}}
+    {{/if}}
 {{else}}
-    <a href="{{href}}" class="px-5 py-1.5 font-semibold text-center text-white bg-orange-600 rounded-lg shadow-md inset-shadow-lg inset-shadow-white/20 ring ring-orange-600 inset-ring-2 inset-ring-white/30 cursor-pointer {{class}}">{{> @partial-block }}</a>
+    {{#if (not anchor)}}
+        {{#if (not secondary)}}
+            <button onclick="{{onclick}}" class="font-semibold text-orange-600 hover:text-orange-400 drop-shadow-xs cursor-pointer transition-colors duration-200 {{class}}">{{> @partial-block }}</button>
+        {{else}}
+            <button onclick="{{onclick}}" class="font-semibold text-stone-500 hover:text-stone-700 drop-shadow-xs cursor-pointer transition-colors duration-200 {{class}}">{{> @partial-block }}</button>
+        {{/if}}
+    {{else}}
+        {{#if (not secondary)}}
+            <a href="{{href}}" class="font-semibold text-orange-600 hover:text-orange-400 drop-shadow-xs cursor-pointer transition-colors duration-200 {{class}}">{{> @partial-block }}</a>
+        {{else}}
+            <a href="{{href}}" class="font-semibold text-stone-500 hover:text-stone-700 drop-shadow-xs cursor-pointer transition-colors duration-200 {{class}}">{{> @partial-block }}</a>
+        {{/if}}
+    {{/if}}
 {{/if}}

@@ -15,7 +15,8 @@ export default (api, foccacia) => {
                 leagueId: t.leagueId,
                 league: league.name,
                 season: t.season,
-                stadium: team.stadium
+                stadium: team.stadium,
+                logo: team.logo
             };
         })
     );

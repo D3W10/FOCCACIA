@@ -34,7 +34,7 @@ export default (service) => ({
      * @param {Response} res 
      */
     signup: (req, res) => {
-        handleError(res, () => res.render("signup"));
+        handleError(res, () => res.render("signin/signup"));
     },
 
     /**
@@ -42,7 +42,7 @@ export default (service) => ({
      * @param {Response} res 
      */
     login: (req, res) => {
-        handleError(res, () => res.render("login"));
+        handleError(res, () => res.render("signin/login"));
     },
 
     /**
@@ -55,10 +55,10 @@ export default (service) => ({
                 await service.getGroupDetails(g, BEARER_TOKEN)
             ));
 
-            res.render("groups", {
-                created: req.query.success === "true",
+            res.render("groups/list", {
                 hasGroups: groups.length > 0,
-                groups
+                groups,
+                deleted: req.query.deleteSuccess === "true"
             });
         });
     },
@@ -68,7 +68,7 @@ export default (service) => ({
      * @param {Response} res 
      */
     createGroupForm: (req, res) => {
-        handleError(res, () => res.render("create"));
+        handleError(res, () => res.render("groups/create"));
     },
 
     /**
@@ -77,9 +77,9 @@ export default (service) => ({
      */
     createGroup: (req, res) => {
         handleError(res, async () => {
-            await service.createGroup(req.body.name, req.body.description, [], BEARER_TOKEN);
+            let group = await service.createGroup(req.body.name, req.body.description, [], BEARER_TOKEN);
             
-            res.redirect("/groups?success=true");
+            res.redirect("/groups/" + group.id + "?createdSuccess=true");
         });
     },
 
@@ -91,13 +91,17 @@ export default (service) => ({
         handleError(res, async () => {
             const group = await service.getGroupDetails(req.params.id, BEARER_TOKEN);
 
-            res.render("group", {
+            res.render("groups/details", {
                 id: req.params.id,
+                name: group.name,
                 description: group.description,
+                logo: group.logo,
+                created: req.query.createdSuccess === "true",
                 added: req.query.addSuccess === "true",
                 removed: req.query.removeSuccess === "true",
                 hasTeams: group.teams.length > 0,
-                teams: group.teams
+                teams: group.teams,
+                token: BEARER_TOKEN
             });
         });
     },
@@ -130,18 +134,6 @@ export default (service) => ({
             }, BEARER_TOKEN);
 
             res.redirect("/groups/" + req.params.id);
-        });
-    },
-
-    /**
-     * @param {Request} req 
-     * @param {Response} res 
-     */
-    deleteGroup: (req, res) => {
-        handleError(res, async () => {
-            await service.deleteGroup(req.params.id, BEARER_TOKEN);
-
-            res.redirect("/");
         });
     },
 
@@ -189,18 +181,6 @@ export default (service) => ({
             }], BEARER_TOKEN);
 
             res.redirect(`/groups/${req.params.id}?addSuccess=true`);
-        });
-    },
-
-    /**
-     * @param {Request} req 
-     * @param {Response} res 
-     */
-    removeTeamFromGroup: (req, res) => {
-        handleError(res, async () => {
-            await service.removeTeamFromGroup(req.params.id, +req.params.team, +req.params.league, +req.params.season, BEARER_TOKEN);
-
-            res.redirect(`/groups/${req.params.id}?removeSuccess=true`);
         });
     }
 });
