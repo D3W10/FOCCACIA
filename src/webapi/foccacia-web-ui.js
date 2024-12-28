@@ -114,7 +114,7 @@ export default (service) => ({
         handleError(res, async () => {
             const group = await service.getGroupDetails(req.params.id, BEARER_TOKEN);
 
-            res.render("edit", {
+            res.render("groups/edit", {
                 id: req.params.id,
                 name: group.name,
                 description: group.description
@@ -144,9 +144,9 @@ export default (service) => ({
     searchTeams: (req, res) => {
         handleError(res, async () => {
             if (!req.query.team)
-                res.render("search");
+                res.render("search/bar");
             else
-                res.render("results", {
+                res.render("search/teams", {
                     teams: await service.searchTeams(req.query.team)
                 });
         });

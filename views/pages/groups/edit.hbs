@@ -2,17 +2,17 @@
 <html lang="en">
     <head>
         {{> head}}
-        <title>FOCCACIA | Create Group</title>
+        <title>FOCCACIA | Edit Group</title>
     </head>
     <body>
         {{> navbar fixed=true}}
         <div class="w-full h-full flex flex-col justify-center items-center">
             <div class="w-full max-w-sm my-20 flex flex-col">
-                <h1 class="mb-6 text-3xl font-bold">Create Group</h1>
+                <h1 class="mb-6 text-3xl font-bold">Edit Group</h1>
                 <form method="post" class="w-full flex flex-col space-y-4">
-                    {{> input type="text" name="name" placeholder="Name" required="required"}}
-                    {{> input type="area" name="description" placeholder="Description" required="required"}}
-                    {{#> button}}Create{{/button}}
+                    {{> input type="text" name="name" value=name placeholder="Name" required="required"}}
+                    {{> input type="area" name="description" value=description placeholder="Description" required="required"}}
+                    {{#> button}}Save{{/button}}
                 </form>
             </div>
         </div>

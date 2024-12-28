@@ -69,14 +69,14 @@ app.post("/api/users", webApi.createUser);
 app.get("/", webUi.home);
 app.get("/signup", webUi.signup);
 app.get("/login", webUi.login);
+app.get("/search", webUi.searchTeams);
+app.get("/search/:team", webUi.getLeagues);
 app.get("/groups", webUi.listGroups);
 app.get("/groups/create", webUi.createGroupForm);
 app.post("/groups/create", webUi.createGroup);
 app.get("/groups/:id", webUi.getGroupDetails);
 app.get("/groups/:id/edit", webUi.editGroupForm);
 app.post("/groups/:id/edit", webUi.editGroup);
-app.get("/groups/:id/teams", webUi.searchTeams);
-app.get("/groups/:id/teams/:team/leagues", webUi.getLeagues);
 app.post("/groups/:id/teams/:team/leagues", webUi.addTeamToGroup);
 
 //#endregion
