@@ -16,6 +16,12 @@
                         <p class="mt-1 text-sm text-stone-700">The group {{name}} was created successfully</p>
                     {{/sonner}}
                 {{/if}}
+                {{#if edited}}
+                    {{#> sonner}}
+                        <p class="font-semibold">Group edited successfully!</p>
+                        <p class="mt-1 text-sm text-stone-700">The group {{name}} was updated successfully</p>
+                    {{/sonner}}
+                {{/if}}
                 {{#if added}}
                     {{#> sonner}}
                         <p class="font-semibold">Team added successfully!</p>
@@ -74,6 +80,7 @@
     <script>
         const params = new URLSearchParams(window.location.search);
         params.delete("createdSuccess");
+        params.delete("editedSuccess");
         params.delete("addSuccess");
         params.delete("removeSuccess");
         window.history.replaceState({}, "", window.location.pathname + (params.size != 0 ? "?" + params.toString() : ""));

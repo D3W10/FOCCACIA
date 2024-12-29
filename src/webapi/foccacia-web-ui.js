@@ -97,6 +97,7 @@ export default (service) => ({
                 description: group.description,
                 logo: group.logo,
                 created: req.query.createdSuccess === "true",
+                edited: req.query.editedSuccess === "true",
                 added: req.query.addSuccess === "true",
                 removed: req.query.removeSuccess === "true",
                 hasTeams: group.teams.length > 0,
@@ -133,7 +134,7 @@ export default (service) => ({
                 description: req.body.description
             }, BEARER_TOKEN);
 
-            res.redirect("/groups/" + req.params.id);
+            res.redirect("/groups/" + req.params.id + "?editedSuccess=true");
         });
     },
 
@@ -145,10 +146,20 @@ export default (service) => ({
         handleError(res, async () => {
             if (!req.query.team)
                 res.render("search/bar");
-            else
-                res.render("search/teams", {
-                    teams: await service.searchTeams(req.query.team)
-                });
+            else {
+                const teams = await service.searchTeams(req.query.team);
+
+                if (teams.length == 0)
+                    res.render("search/bar", {
+                        failSearch: true,
+                        query: req.query.team
+                    });
+                else
+                    res.render("search/teams", {
+                        query: req.query.team,
+                        teams: teams
+                    });
+            }
         });
     },
 
