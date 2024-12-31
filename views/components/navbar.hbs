@@ -5,8 +5,15 @@
             <span>FOCCACIA</span>
         </a>
         <div class="flex items-center space-x-4">
-            {{#> button anchor=true href="/signup"}}Create account{{/button}}
-            {{#> button anchor=true secondary=true href="/login"}}Log In{{/button}}
+            {{#if (not loggedIn)}}
+                {{#> button anchor=true href="/signup"}}Create account{{/button}}
+                {{#> button anchor=true secondary=true href="/login"}}Log In{{/button}}
+            {{else}}
+                {{#> button anchor=true href="/groups"}}Go to groups{{/button}}
+                <form method="post" action="/logout">
+                    {{#> button secondary=true}}Log Out{{/button}}
+                </form>
+            {{/if}}
         </div>
     </div>
 </div>

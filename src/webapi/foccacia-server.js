@@ -1,8 +1,11 @@
 import express from "express";
 import hbs from "hbs";
+import session from "express-session";
+import passport from "passport";
 import webApiBuilder from "./foccacia-web-api.js";
 import webUiBuilder from "./foccacia-web-ui.js";
 import serviceBuilder from "../service/foccacia-services.js";
+import passportBuilder from "../auth/passport-config.js";
 import api from "../data/fapi-teams-data.js";
 // import fakeApi from "../data/fapi-teams-data-fake.js";
 import foccacia from "../data/foccacia-elastic.js";
@@ -46,6 +49,19 @@ hbs.registerHelper("concat", function () {
 const service = serviceBuilder(api, foccacia);
 const webApi = webApiBuilder(service);
 const webUi = webUiBuilder(service);
+passportBuilder(foccacia);
+
+//#region Authentication
+
+app.use(session({
+    secret: "foccacia-secret",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+//#endregion
 
 //#region API Endpoints
 
@@ -67,17 +83,36 @@ app.post("/api/users", webApi.createUser);
 //#region UI Endpoints
 
 app.get("/", webUi.home);
-app.get("/signup", webUi.signup);
+app.get("/signup", webUi.signupForm);
+app.post("/signup", webUi.signup);
 app.get("/login", webUi.login);
+app.post("/login", passport.authenticate("local", {
+    successRedirect: "/groups",
+    failureRedirect: "/login"
+}));
+app.post("/logout", webUi.logout);
+
 app.get("/search", webUi.searchTeams);
 app.get("/search/:team", webUi.getLeagues);
-app.get("/groups", webUi.listGroups);
-app.get("/groups/create", webUi.createGroupForm);
-app.post("/groups/create", webUi.createGroup);
-app.get("/groups/:id", webUi.getGroupDetails);
-app.get("/groups/:id/edit", webUi.editGroupForm);
-app.post("/groups/:id/edit", webUi.editGroup);
-app.post("/groups/:id/teams/:team/leagues", webUi.addTeamToGroup);
+
+const priv = express.Router();
+
+priv.get("/groups", webUi.listGroups);
+priv.get("/groups/create", webUi.createGroupForm);
+priv.post("/groups/create", webUi.createGroup);
+priv.get("/groups/:id", webUi.getGroupDetails);
+priv.get("/groups/:id/edit", webUi.editGroupForm);
+priv.post("/groups/:id/edit", webUi.editGroup);
+priv.post("/groups/:id/teams/:team/leagues", webUi.addTeamToGroup);
+
+priv.use((req, res, next) => {
+    if (req.isAuthenticated())
+        return next();
+
+    res.redirect("/login");
+});
+
+app.use("/", priv);
 
 //#endregion
 

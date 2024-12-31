@@ -13,12 +13,14 @@ PUT  {{url}}/groups
 
 
 ### Create default user
+# Password: foccacia
 
 POST {{url}}/users/_doc
 Content-Type: application/json
 
 {
-    "name": "User",
+    "username": "User",
+    "password": "$2y$10$xEQAvBX/pNkF3yM6Z2LdF.RPkxtIVADuEEW28AQp.cOPzRsrlbAJ2",
     "token": "f37b4092-c404-4d21-9c79-acbaf879b23c"
 }
 

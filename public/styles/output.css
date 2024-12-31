@@ -605,6 +605,9 @@
   .ml-2 {
     margin-left: calc(var(--spacing) * 2);
   }
+  .contents {
+    display: contents;
+  }
   .flex {
     display: flex;
   }
@@ -644,9 +647,6 @@
   .h-12 {
     height: calc(var(--spacing) * 12);
   }
-  .h-16 {
-    height: calc(var(--spacing) * 16);
-  }
   .h-72 {
     height: calc(var(--spacing) * 72);
   }
@@ -674,17 +674,14 @@
   .w-7\/10 {
     width: calc(7/10 * 100%);
   }
+  .w-28 {
+    width: calc(var(--spacing) * 28);
+  }
   .w-100 {
     width: calc(var(--spacing) * 100);
   }
   .w-12 {
     width: calc(var(--spacing) * 12);
-  }
-  .w-16 {
-    width: calc(var(--spacing) * 16);
-  }
-  .w-28 {
-    width: calc(var(--spacing) * 28);
   }
   .w-120 {
     width: calc(var(--spacing) * 120);
@@ -1108,26 +1105,9 @@
   .\[--sonner-time-bar\:0\] {
     --sonner-time-bar: 0;
   }
-  .first\:rounded-t-2xl {
-    &:first-child {
-      border-top-left-radius: var(--radius-2xl);
-      border-top-right-radius: var(--radius-2xl);
-    }
-  }
-  .last\:rounded-b-2xl {
-    &:last-child {
-      border-bottom-right-radius: var(--radius-2xl);
-      border-bottom-left-radius: var(--radius-2xl);
-    }
-  }
   .odd\:bg-stone-200 {
     &:nth-child(odd) {
       background-color: var(--color-stone-200);
-    }
-  }
-  .even\:bg-stone-100 {
-    &:nth-child(even) {
-      background-color: var(--color-stone-100);
     }
   }
   .focus-within\:border-orange-600 {

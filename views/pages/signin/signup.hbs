@@ -5,7 +5,7 @@
         <title>FOCCACIA | Sign Up</title>
     </head>
     <body class="w-full min-h-full flex flex-col justify-center items-center">
-        {{#> signin btnText="Sign Up" callback="#"}}
+        {{#> signin btnText="Sign Up" method="POST" action="/signup"}}
             Already have an account? {{#> button link=true anchor=true href="/login"}}Log in{{/button}} instead
         {{/signin}}
     </body>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {{> head}}
+        <title>FOCCACIA | Team Leagues</title>
+    </head>
+    <body>
+        {{> navbar loggedIn=loggedIn}}
+        <div class="w-full flex flex-col justify-start items-center">
+            <div class="w-full max-w-8xl my-20 flex flex-col">
+                <h1 class="mb-6 text-3xl font-bold">Team Leagues</h1>
+                <table class="w-full bg-stone-100 rounded-xl shadow ring-1 ring-stone-900/10 divide-y divide-stone-900/10 overflow-hidden">
+                    <tr class="font-medium text-left bg-stone-300/75 border-b border-stone-900/10 divide-x divide-stone-900/10">
+                        <th class="w-1/10 px-4 py-3 pl-6 text-left">Icon</th>
+                        <th class="w-3/10 px-4 py-3 text-left">Name</th>
+                        <th class="w-3/10 px-4 py-3 text-left">Country</th>
+                        <th class="w-2/10 px-4 py-3 text-left">Season</th>
+                        <th class="w-1/10 px-4 py-3 pr-6 text-left">Action</th>
+                    </tr>
+                    {{#each leagues}}
+                        <tr class="divide-x divide-stone-900/10 odd:bg-stone-200">
+                            <form method="post" class="contents">
+                                <td class="pl-6 py-1.5">
+                                    <img src="{{this.logo}}" alt="{{this.name}}" class="h-12 object-contain" />
+                                </td>
+                                <td class="px-4 py-3">{{this.name}}</td>
+                                <td class="px-4 py-3">{{this.country}}</td>
+                                <td class="px-4 py-3">
+                                    <select name="season">
+                                        {{#each seasons}}
+                                            <option>{{this}}</option>
+                                        {{/each}}
+                                    </select>
+                                </td>
+                                <td class="px-4 py-3 pr-6 text-center">
+                                    <input type="hidden" name="id" value="{{this.id}}" />
+                                    {{#> button link=true anchor=true href=(concat "/search/" this.id)}}Select{{/button}}
+                                </td>
+                            </form>
+                        </tr>
+                    {{/each}}
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

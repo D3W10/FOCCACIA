@@ -12,9 +12,13 @@
     "main": "src/webapi/foccacia-server.js",
     "type": "module",
     "dependencies": {
+        "bcrypt": "^5.1.1",
         "chai-as-promised": "^8.0.1",
         "express": "^4.21.2",
-        "hbs": "^4.2.0"
+        "express-session": "^1.18.1",
+        "hbs": "^4.2.0",
+        "passport": "^0.7.0",
+        "passport-local": "^1.0.0"
     },
     "devDependencies": {
         "@tailwindcss/cli": "^4.0.0-beta.8",

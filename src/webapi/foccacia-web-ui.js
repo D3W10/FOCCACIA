@@ -3,20 +3,34 @@ import { errors } from "../utils/errorManager.js";
 /**
  * @typedef {import("express").Request} Request
  * @typedef {import("express").Response} Response
+ * @typedef {import("../data/foccacia-data-mem").User} User
  */
 
-const TOKEN = "f37b4092-c404-4d21-9c79-acbaf879b23c";
-const BEARER_TOKEN = "Bearer " + TOKEN;
+/**
+ * @param {Express.User} user
+ * @returns {String}
+ */
+// @ts-ignore
+const buildAuth = user => `Bearer ${user.token}`;
 
-async function handleError(res, tryFunc) {
+/**
+ * @param {Request} req 
+ * @param {Response} res 
+ */
+async function handleError(req, res, tryFunc) {
     try {
         await tryFunc()
     }
     catch (e) {
         const status = e.code ? errors[e.code].status : 500;
 
-        console.error(e);
-        res.status(status).render("error", { status });
+        if (e.code)
+            console.error(errors[e.code].message);
+
+        res.status(status).render("error", {
+            loggedIn: req.user != undefined,
+            status
+        });
     }
 }
 
@@ -26,7 +40,17 @@ export default (service) => ({
      * @param {Response} res 
      */
     home: (req, res) => {
-        handleError(res, () => res.render("home"));
+        handleError(req, res, () => res.render("home", {
+            loggedIn: req.user != undefined
+        }));
+    },
+
+    /**
+     * @param {Request} req 
+     * @param {Response} res 
+     */
+    signupForm: (req, res) => {
+        handleError(req, res, () => res.render("signin/signup"));
     },
 
     /**
@@ -34,7 +58,16 @@ export default (service) => ({
      * @param {Response} res 
      */
     signup: (req, res) => {
-        handleError(res, () => res.render("signin/signup"));
+        handleError(req, res, async () => {
+            try {
+                const { username, password } = req.body;
+                await service.createUser(username, password);
+                res.redirect("/login");
+            }
+            catch {
+                res.redirect("/signup");
+            }
+        });
     },
 
     /**
@@ -42,7 +75,13 @@ export default (service) => ({
      * @param {Response} res 
      */
     login: (req, res) => {
-        handleError(res, () => res.render("signin/login"));
+        handleError(req, res, () => res.render("signin/login"));
+    },
+
+    logout: (req, res) => {
+        handleError(req, res, async () => {
+            req.logout(() => res.redirect("/"));
+        });
     },
 
     /**
@@ -50,12 +89,13 @@ export default (service) => ({
     * @param {Response} res 
     */
     listGroups: async (req, res) => {
-        handleError(res, async () => {
-            const groups = await Promise.all((await service.listGroups(BEARER_TOKEN)).map(async g =>
-                await service.getGroupDetails(g, BEARER_TOKEN)
+        handleError(req, res, async () => {
+            const groups = await Promise.all((await service.listGroups(buildAuth(req.user))).map(async g =>
+                await service.getGroupDetails(g, buildAuth(req.user))
             ));
 
             res.render("groups/list", {
+                loggedIn: req.user != undefined,
                 hasGroups: groups.length > 0,
                 groups,
                 deleted: req.query.deleteSuccess === "true"
@@ -68,7 +108,9 @@ export default (service) => ({
      * @param {Response} res 
      */
     createGroupForm: (req, res) => {
-        handleError(res, () => res.render("groups/create"));
+        handleError(req, res, () => res.render("groups/create", {
+            loggedIn: req.user != undefined
+        }));
     },
 
     /**
@@ -76,8 +118,8 @@ export default (service) => ({
      * @param {Response} res 
      */
     createGroup: (req, res) => {
-        handleError(res, async () => {
-            let group = await service.createGroup(req.body.name, req.body.description, [], BEARER_TOKEN);
+        handleError(req, res, async () => {
+            let group = await service.createGroup(req.body.name, req.body.description, [], buildAuth(req.user));
             
             res.redirect("/groups/" + group.id + "?createdSuccess=true");
         });
@@ -88,10 +130,11 @@ export default (service) => ({
      * @param {Response} res 
      */
     getGroupDetails: (req, res) => {
-        handleError(res, async () => {
-            const group = await service.getGroupDetails(req.params.id, BEARER_TOKEN);
+        handleError(req, res, async () => {
+            const group = await service.getGroupDetails(req.params.id, buildAuth(req.user));
 
             res.render("groups/details", {
+                loggedIn: req.user != undefined,
                 id: req.params.id,
                 name: group.name,
                 description: group.description,
@@ -102,7 +145,7 @@ export default (service) => ({
                 removed: req.query.removeSuccess === "true",
                 hasTeams: group.teams.length > 0,
                 teams: group.teams,
-                token: BEARER_TOKEN
+                token: buildAuth(req.user)
             });
         });
     },
@@ -112,10 +155,11 @@ export default (service) => ({
      * @param {Response} res 
      */
     editGroupForm: (req, res) => {
-        handleError(res, async () => {
-            const group = await service.getGroupDetails(req.params.id, BEARER_TOKEN);
+        handleError(req, res, async () => {
+            const group = await service.getGroupDetails(req.params.id, buildAuth(req.user));
 
             res.render("groups/edit", {
+                loggedIn: req.user != undefined,
                 id: req.params.id,
                 name: group.name,
                 description: group.description
@@ -128,11 +172,11 @@ export default (service) => ({
      * @param {Response} res 
      */
     editGroup: (req, res) => {
-        handleError(res, async () => {
+        handleError(req, res, async () => {
             await service.editGroup(req.params.id, {
                 name: req.body.name,
                 description: req.body.description
-            }, BEARER_TOKEN);
+            }, buildAuth(req.user));
 
             res.redirect("/groups/" + req.params.id + "?editedSuccess=true");
         });
@@ -143,7 +187,7 @@ export default (service) => ({
      * @param {Response} res 
      */
     searchTeams: (req, res) => {
-        handleError(res, async () => {
+        handleError(req, res, async () => {
             if (!req.query.team)
                 res.render("search/bar");
             else {
@@ -151,11 +195,13 @@ export default (service) => ({
 
                 if (teams.length == 0)
                     res.render("search/bar", {
+                        loggedIn: req.user != undefined,
                         failSearch: true,
                         query: req.query.team
                     });
                 else
                     res.render("search/teams", {
+                        loggedIn: req.user != undefined,
                         query: req.query.team,
                         teams: teams
                     });
@@ -168,12 +214,13 @@ export default (service) => ({
      * @param {Response} res 
      */
     getLeagues: (req, res) => {
-        handleError(res, async () => {
+        handleError(req, res, async () => {
             const leagues = await service.searchLeagues(req.params.team);
 
             leagues.forEach(l => l.seasons.reverse());
 
-            res.render("leagues", {
+            res.render("search/leagues", {
+                loggedIn: req.user != undefined,
                 leagues
             });
         });
@@ -184,12 +231,12 @@ export default (service) => ({
      * @param {Response} res 
      */
     addTeamToGroup: (req, res) => {
-        handleError(res, async () => {
+        handleError(req, res, async () => {
             await service.addTeamsToGroup(req.params.id, [{
                 id: +req.params.team,
                 leagueId: +req.body.id,
                 season: +req.body.season
-            }], BEARER_TOKEN);
+            }], buildAuth(req.user));
 
             res.redirect(`/groups/${req.params.id}?addSuccess=true`);
         });

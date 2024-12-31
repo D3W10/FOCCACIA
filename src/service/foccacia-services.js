@@ -1,3 +1,5 @@
+import bcrypt from "bcrypt";
+
 const throwError = code => Promise.reject({ code });
 
 export default (api, foccacia) => {
@@ -160,11 +162,15 @@ export default (api, foccacia) => {
             return foccacia.removeTeamFromGroup(id, idt, idl, season);
         },
 
-        createUser: async name => {
-            if (!name)
+        createUser: async (username, password) => {
+            if (!username)
                 return throwError("a12");
+            else if (!password)
+                return throwError("a14");
+            else if (await foccacia.getUserByUsername(username))
+                return throwError("a16");
 
-            return foccacia.createUser(name);
+            return foccacia.createUser(username, await bcrypt.hash(password, 10));
         }
     };
 };

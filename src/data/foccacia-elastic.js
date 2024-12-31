@@ -182,13 +182,25 @@ async function removeTeamFromGroup(id, idTeam, leagueId, season) {
 }
 
 /**
+ * Gets a user by their username
+ * @param {String} username
+ * @returns {Promise<User | undefined>}
+ */
+async function getUserByUsername(username) {
+    const data = await fetchData(`users/_search?q=username:"${username}"`);
+    return data && data.hits.hits.length > 0 ? parseUser(data.hits.hits[0]) : undefined;
+}
+
+/**
  * Creates a new user
- * @param {String} name
+ * @param {String} username
+ * @param {String} password
  * @returns {Promise<User>}
  */
-async function createUser(name) {
+async function createUser(username, password) {
     const newUser = {
-        name,
+        username,
+        password,
         token: crypto.randomUUID()
     };
 
@@ -208,5 +220,6 @@ export default {
     addTeamsToGroup,
     getTeamOfGroup,
     removeTeamFromGroup,
-    createUser
+    createUser,
+    getUserByUsername
 }

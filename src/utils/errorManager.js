@@ -23,6 +23,9 @@ export const errors = {
     a11: { status: 400, message: "No such team in this group" },
     a12: { status: 400, message: "User name missing" },
     a13: { status: 400, message: "All teams already exist in this group" },
+    a14: { status: 400, message: "User password missing" },
+    a15: { status: 401, message: "Could not authenticate" },
+    a16: { status: 400, message: "A user with this username already exists" },
 
     h1: { status: 401, message: "Invalid authentication header" },
 

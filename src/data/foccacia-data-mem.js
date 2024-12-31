@@ -23,7 +23,8 @@
  * 
  * @typedef {Object} User
  * @property {String} id
- * @property {String} name
+ * @property {String} username
+ * @property {String} password
  * @property {String} token
  */
 
@@ -156,14 +157,25 @@ function removeTeamFromGroup(id, idTeam, leagueId, season) {
 }
 
 /**
+ * Gets a user by their username
+ * @param {String} username
+ * @returns {Promise<User | undefined>}
+ */
+function getUserByUsername(username) {
+    return Promise.resolve(users.find(u => u.username == username)) 
+}
+
+/**
  * Creates a new user
- * @param {String} name
+ * @param {String} username
+ * @param {String} password
  * @returns {Promise<User>}
  */
-function createUser(name) {
+function createUser(username, password) {
     const newUser = {
         id: (nextUserId++).toString(),
-        name,
+        username,
+        password,
         token: crypto.randomUUID()
     };
 
@@ -188,6 +200,7 @@ export default {
     addTeamsToGroup,
     getTeamOfGroup,
     removeTeamFromGroup,
+    getUserByUsername,
     createUser,
     resetData
 }
