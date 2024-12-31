@@ -3,7 +3,7 @@ import hbs from "hbs";
 import session from "express-session";
 import passport from "passport";
 import webApiBuilder from "./foccacia-web-api.js";
-import webUiBuilder from "./foccacia-web-ui.js";
+import webUiBuilder, { renderError } from "./foccacia-web-ui.js";
 import serviceBuilder from "../service/foccacia-services.js";
 import passportBuilder from "../auth/passport-config.js";
 import api from "../data/fapi-teams-data.js";
@@ -51,7 +51,7 @@ const webApi = webApiBuilder(service);
 const webUi = webUiBuilder(service);
 passportBuilder(foccacia);
 
-//#region Authentication
+//#region Middlewares
 
 app.use(session({
     secret: "foccacia-secret",
@@ -60,6 +60,13 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+const checkAuth = (req, res, next) => {
+    if (!req.route || req.isAuthenticated())
+        return next();
+
+    res.redirect("/login");
+};
 
 //#endregion
 
@@ -95,24 +102,21 @@ app.post("/logout", webUi.logout);
 app.get("/search", webUi.searchTeams);
 app.get("/search/:team", webUi.getLeagues);
 
-const priv = express.Router();
+app.get("/groups", checkAuth, webUi.listGroups);
+app.get("/groups/create", checkAuth, webUi.createGroupForm);
+app.post("/groups/create", checkAuth, webUi.createGroup);
+app.get("/groups/:id", checkAuth, webUi.getGroupDetails);
+app.get("/groups/:id/edit", checkAuth, webUi.editGroupForm);
+app.post("/groups/:id/edit", checkAuth, webUi.editGroup);
+app.post("/groups/:id/teams/:team/leagues", checkAuth, webUi.addTeamToGroup);
 
-priv.get("/groups", webUi.listGroups);
-priv.get("/groups/create", webUi.createGroupForm);
-priv.post("/groups/create", webUi.createGroup);
-priv.get("/groups/:id", webUi.getGroupDetails);
-priv.get("/groups/:id/edit", webUi.editGroupForm);
-priv.post("/groups/:id/edit", webUi.editGroup);
-priv.post("/groups/:id/teams/:team/leagues", webUi.addTeamToGroup);
+app.use((req, res, next) => {
+    console.log("C " + req.route);
+    if (!req.route)
+        return renderError(req, res, { code: "a0" });
 
-priv.use((req, res, next) => {
-    if (req.isAuthenticated())
-        return next();
-
-    res.redirect("/login");
+    next();
 });
-
-app.use("/", priv);
 
 //#endregion
 

@@ -170,7 +170,8 @@ export default (api, foccacia) => {
             else if (await foccacia.getUserByUsername(username))
                 return throwError("a16");
 
-            return foccacia.createUser(username, await bcrypt.hash(password, 10));
+            const { password: _, ...user } = await foccacia.createUser(username, await bcrypt.hash(password, 10));
+            return user;
         }
     };
 };

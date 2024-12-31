@@ -22,16 +22,21 @@ async function handleError(req, res, tryFunc) {
         await tryFunc()
     }
     catch (e) {
-        const status = e.code ? errors[e.code].status : 500;
-
-        if (e.code)
-            console.error(errors[e.code].message);
-
-        res.status(status).render("error", {
-            loggedIn: req.user != undefined,
-            status
-        });
+        return renderError(req, res, e);
     }
+}
+
+export function renderError(req, res, e) {
+    const status = errors[e.code ?? "-1"].status;
+    const message = errors[e.code ?? "-1"].message;
+
+    console.error(message);
+
+    res.status(status).render("error", {
+        loggedIn: req.user != undefined,
+        status,
+        message
+    });
 }
 
 export default (service) => ({

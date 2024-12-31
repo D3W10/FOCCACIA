@@ -10,6 +10,7 @@
 export const errors = {
     "-1": { status: 500, message: "Unknown error" },
 
+    a0: { status: 404, message: "Unexistent page" },
     a1: { status: 400, message: "Team name missing" },
     a2: { status: 400, message: "Invalid team ID" },
     a3: { status: 400, message: "Group name missing" },
