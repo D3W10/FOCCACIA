@@ -677,14 +677,14 @@
   .w-7\/10 {
     width: calc(7/10 * 100%);
   }
+  .w-28 {
+    width: calc(var(--spacing) * 28);
+  }
   .w-100 {
     width: calc(var(--spacing) * 100);
   }
   .w-12 {
     width: calc(var(--spacing) * 12);
-  }
-  .w-28 {
-    width: calc(var(--spacing) * 28);
   }
   .w-120 {
     width: calc(var(--spacing) * 120);
@@ -975,6 +975,9 @@
   }
   .text-orange-600 {
     color: var(--color-orange-600);
+  }
+  .text-red-600 {
+    color: var(--color-red-600);
   }
   .text-stone-500 {
     color: var(--color-stone-500);

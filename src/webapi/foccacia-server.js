@@ -95,7 +95,8 @@ app.post("/signup", webUi.signup);
 app.get("/login", webUi.login);
 app.post("/login", passport.authenticate("local", {
     successRedirect: "/groups",
-    failureRedirect: "/login"
+    failureRedirect: "/login",
+    failureMessage: true
 }));
 app.post("/logout", webUi.logout);
 
@@ -111,7 +112,6 @@ app.post("/groups/:id/edit", checkAuth, webUi.editGroup);
 app.post("/groups/:id/teams/:team/leagues", checkAuth, webUi.addTeamToGroup);
 
 app.use((req, res, next) => {
-    console.log("C " + req.route);
     if (!req.route)
         return renderError(req, res, { code: "a0" });
 

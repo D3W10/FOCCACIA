@@ -80,7 +80,10 @@ export default (service) => ({
      * @param {Response} res 
      */
     login: (req, res) => {
-        handleError(req, res, () => res.render("signin/login"));
+        handleError(req, res, () => res.render("signin/login", {
+            // @ts-ignore
+            message: req.session.messages ? req.session.messages[req.session.messages.length - 1] : undefined
+        }));
     },
 
     logout: (req, res) => {
