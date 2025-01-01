@@ -608,9 +608,6 @@
   .ml-2 {
     margin-left: calc(var(--spacing) * 2);
   }
-  .contents {
-    display: contents;
-  }
   .flex {
     display: flex;
   }
@@ -677,14 +674,14 @@
   .w-7\/10 {
     width: calc(7/10 * 100%);
   }
-  .w-28 {
-    width: calc(var(--spacing) * 28);
-  }
   .w-100 {
     width: calc(var(--spacing) * 100);
   }
   .w-12 {
     width: calc(var(--spacing) * 12);
+  }
+  .w-28 {
+    width: calc(var(--spacing) * 28);
   }
   .w-120 {
     width: calc(var(--spacing) * 120);
@@ -752,6 +749,13 @@
       --tw-space-y-reverse: 0;
       margin-block-start: calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse));
       margin-block-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)));
+    }
+  }
+  .space-y-3 {
+    :where(& > :not(:last-child)) {
+      --tw-space-y-reverse: 0;
+      margin-block-start: calc(calc(var(--spacing) * 3) * var(--tw-space-y-reverse));
+      margin-block-end: calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-y-reverse)));
     }
   }
   .space-y-4 {
@@ -905,6 +909,9 @@
   }
   .py-1\.5 {
     padding-block: calc(var(--spacing) * 1.5);
+  }
+  .py-2\.5 {
+    padding-block: calc(var(--spacing) * 2.5);
   }
   .py-3 {
     padding-block: calc(var(--spacing) * 3);

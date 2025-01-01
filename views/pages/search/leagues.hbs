@@ -3,9 +3,11 @@
     <head>
         {{> head}}
         <title>FOCCACIA | Team Leagues</title>
+        {{> script}}
     </head>
     <body>
         {{> navbar loggedIn=loggedIn}}
+        {{> loading}}
         <div class="w-full flex flex-col justify-start items-center">
             <div class="w-full max-w-8xl my-20 flex flex-col">
                 <h1 class="mb-6 text-3xl font-bold">Team Leagues</h1>
@@ -21,30 +23,98 @@
                     </tr>
                     {{#each leagues}}
                         <tr class="divide-x divide-stone-900/10 odd:bg-stone-200">
-                            <form method="post" class="contents">
-                                <td class="pl-6 py-1.5">
-                                    <img src="{{this.logo}}" alt="{{this.name}}" class="h-12 object-contain" />
+                            <td class="pl-6 py-1.5">
+                                <img src="{{this.logo}}" alt="{{this.name}}" class="h-12 object-contain" />
+                            </td>
+                            <td class="px-4 py-3">{{this.name}}</td>
+                            <td class="px-4 py-3">{{this.country}}</td>
+                            <td class="px-4 py-3 {{#if (not @root.loggedIn)}}pr-6{{/if}}">
+                                <select id="season-{{this.id}}">
+                                    {{#each seasons}}
+                                        <option>{{this}}</option>
+                                    {{/each}}
+                                </select>
+                            </td>
+                            {{#if @root.loggedIn}}
+                                <td class="px-4 py-3 pr-6 text-center">
+                                    {{#> button link=true onclick=(concat "attemptAdd(" this.id ", +document.getElementById('season-" this.id "').value)")}}Select{{/button}}
                                 </td>
-                                <td class="px-4 py-3">{{this.name}}</td>
-                                <td class="px-4 py-3">{{this.country}}</td>
-                                <td class="px-4 py-3 {{#if (not @root.loggedIn)}}pr-6{{/if}}">
-                                    <select name="season">
-                                        {{#each seasons}}
-                                            <option>{{this}}</option>
-                                        {{/each}}
-                                    </select>
-                                </td>
-                                {{#if @root.loggedIn}}
-                                    <td class="px-4 py-3 pr-6 text-center">
-                                        <input type="hidden" name="id" value="{{this.id}}" />
-                                        {{#> button link=true anchor=true href=(concat "/search/" this.id)}}Select{{/button}}
-                                    </td>
-                                {{/if}}
-                            </form>
+                            {{/if}}
                         </tr>
                     {{/each}}
                 </table>
             </div>
         </div>
+        {{> dialog title="Select a Group" text="To which group do you want to add this team?" id="addDialog" contentId="addDialogContent" hideButtons=true class="w-full"}}
     </body>
+    <script>
+        async function attemptAdd(idl, season) {
+            const groups = await Promise.all((await
+                (await fetch("/api/groups", {
+                    headers: {
+                        "Authorization": "{{token}}"
+                    }
+                }))
+                .json()
+            ).data.map(async id =>
+                (await
+                    (await fetch("/api/groups/" + id, {
+                        headers: {
+                            "Authorization": "{{token}}"
+                        }
+                    }))
+                    .json()
+                ).data
+            ));
+
+            document.getElementById("addDialog").showModal();
+            document.getElementById("addDialog").classList.add("open");
+
+            groups.forEach(g => {
+                const elm = document.createElement("div");
+                elm.className = "px-4 py-2.5 flex justify-between bg-stone-200 rounded-lg shadow";
+
+                const text = document.createElement("p");
+                text.className = "font-semibold text-stone-700";
+                text.innerText = g.name;
+
+                const btn = document.createElement("button");
+                btn.className = "font-semibold text-orange-600 hover:text-orange-400 drop-shadow-xs cursor-pointer transition-colors duration-200";
+                btn.innerText = "Add";
+                btn.onclick = () => {
+                    closeDialog(document.getElementById("addDialog"))
+                    addToGroup(g.id, idl, season);
+                };
+
+                elm.appendChild(text);
+                elm.appendChild(btn);
+
+                document.getElementById("addDialogContent").appendChild(elm);
+            });
+
+            document.getElementById("addDialogContent").className = "mt-4 space-y-3";
+        }
+
+        async function addToGroup(id, idl, season) {
+            await fetch(`/api/groups/${id}/teams`, {
+                method: "POST",
+                headers: {
+                    "Authorization": "{{token}}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    teams: [{
+                        id: {{team}},
+                        leagueId: idl,
+                        season
+                    }]
+                })
+            });
+
+            startLoading();
+
+            // Prevent 404 page due to many elasticsearch requests
+            setTimeout(() => window.open(`/groups/${id}?addSuccess=true`, "_self"), 2000);
+        }
+    </script>
 </html>

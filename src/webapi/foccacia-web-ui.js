@@ -30,7 +30,7 @@ export function renderError(req, res, e) {
     const status = errors[e.code ?? "-1"].status;
     const message = errors[e.code ?? "-1"].message;
 
-    console.error(message);
+    console.error(e.code ? message : e);
 
     res.status(status).render("error", {
         loggedIn: req.user != undefined,
@@ -231,7 +231,9 @@ export default (service) => ({
 
             res.render("search/leagues", {
                 loggedIn: req.user != undefined,
-                leagues
+                team: req.params.team,
+                leagues,
+                token: req.isAuthenticated() ? buildAuth(req.user) : ""
             });
         });
     },
