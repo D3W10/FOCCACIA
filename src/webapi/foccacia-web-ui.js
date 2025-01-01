@@ -194,7 +194,9 @@ export default (service) => ({
     searchTeams: (req, res) => {
         handleError(req, res, async () => {
             if (!req.query.team)
-                res.render("search/bar");
+                res.render("search/bar", {
+                    loggedIn: req.user != undefined
+                });
             else {
                 const teams = await service.searchTeams(req.query.team);
 

@@ -14,8 +14,10 @@
                         <th class="w-1/10 px-4 py-3 pl-6 text-left">Icon</th>
                         <th class="w-3/10 px-4 py-3 text-left">Name</th>
                         <th class="w-3/10 px-4 py-3 text-left">Country</th>
-                        <th class="w-2/10 px-4 py-3 text-left">Season</th>
-                        <th class="w-1/10 px-4 py-3 pr-6 text-left">Action</th>
+                        <th class="px-4 py-3 text-left {{#if (not loggedIn)}}w-3/10 pr-6{{else}}w-2/10{{/if}}">Season</th>
+                        {{#if loggedIn}}
+                            <th class="w-1/10 px-4 py-3 pr-6 text-left">Action</th>
+                        {{/if}}
                     </tr>
                     {{#each leagues}}
                         <tr class="divide-x divide-stone-900/10 odd:bg-stone-200">
@@ -25,17 +27,19 @@
                                 </td>
                                 <td class="px-4 py-3">{{this.name}}</td>
                                 <td class="px-4 py-3">{{this.country}}</td>
-                                <td class="px-4 py-3">
+                                <td class="px-4 py-3 {{#if (not @root.loggedIn)}}pr-6{{/if}}">
                                     <select name="season">
                                         {{#each seasons}}
                                             <option>{{this}}</option>
                                         {{/each}}
                                     </select>
                                 </td>
-                                <td class="px-4 py-3 pr-6 text-center">
-                                    <input type="hidden" name="id" value="{{this.id}}" />
-                                    {{#> button link=true anchor=true href=(concat "/search/" this.id)}}Select{{/button}}
-                                </td>
+                                {{#if @root.loggedIn}}
+                                    <td class="px-4 py-3 pr-6 text-center">
+                                        <input type="hidden" name="id" value="{{this.id}}" />
+                                        {{#> button link=true anchor=true href=(concat "/search/" this.id)}}Select{{/button}}
+                                    </td>
+                                {{/if}}
                             </form>
                         </tr>
                     {{/each}}
