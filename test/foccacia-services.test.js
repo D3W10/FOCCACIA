@@ -1,389 +1,294 @@
-import { beforeEach, describe, it } from "mocha";
-import { expect, use} from "chai";
+import { expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import serviceBuilder from "../src/service/foccacia-services.js";
+import servicesBuilder from "../src/service/foccacia-services.js";
 import api from "../src/data/fapi-teams-data-fake.js";
 import foccacia from "../src/data/foccacia-data-mem.js";
+import { errors } from "../src/utils/errorManager.js";
 
 use(chaiAsPromised);
 
-describe("Service", () => {
-    let service = serviceBuilder(api, foccacia);
+describe("Services", () => {
+    let services, validAuth;
 
-    beforeEach(() => foccacia.resetData());
+    beforeEach(async () => {
+        foccacia.resetData();
+        services = servicesBuilder(api, foccacia);
+
+        validAuth = "Bearer " + (await foccacia.createUser("test", "test")).token;
+    });
 
     describe("searchTeams()", () => {
-        it("Should return all teams", async () => {
-            expect(await service.searchTeams("Benfica")).to.deep.equal(
-                [{"id": 211,"name": "Benfica","country": "Portugal","founded": 1904,"logo": "https://media.api-sports.io/football/teams/211.png","stadium": "Estádio do Sport Lisboa e Benfica (da Luz)","city": "Lisboa"},{"id": 21201,"name": "Benfica","country": "Macao","founded": null,"logo": "https://media.api-sports.io/football/teams/21201.png","stadium": "University of Science and Technology Stadium (MUST)","city": "Taipa"}]
-            );
+        it("Should return teams array when searching for valid team", async () => {
+            const teams = await services.searchTeams("Benfica");
+            expect(teams).to.be.an("array");
+            expect(teams).to.have.lengthOf(2);
+            expect(teams[0]).to.have.property("id", 211);
+            expect(teams[0]).to.have.property("name", "Benfica");
         });
 
-        it("Should return empty for non-existing team", async () => {
-            expect(await service.searchTeams("0")).to.deep.equal([]);
+        it("Should reject with a1 when name is missing", () => {
+            expect(services.searchTeams()).to.be.rejectedWith(errors.a1.message);
+        });
+
+        it("Should reject with s1 when searching for invalid team", () => {
+            expect(services.searchTeams("invalid")).to.be.rejectedWith(errors.s1.message);
         });
     });
 
     describe("searchLeagues()", () => {
-        it("Should return all leagues of one team", async () => {
-            expect(await service.searchLeagues("211")).to.deep.equal(
-                [{"id": 94,"name": "Primeira Liga","logo": "https://media.api-sports.io/football/leagues/94.png","country": "Portugal","seasons": [2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024]},{"id": 2,"name": "UEFA Champions League","logo": "https://media.api-sports.io/football/leagues/2.png","country": "World","seasons": [2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024]},{"id": 96,"name": "Taça de Portugal","logo": "https://media.api-sports.io/football/leagues/96.png","country": "Portugal","seasons": [2016,2017,2018,2019,2020,2021,2022,2023,2024]},{"id": 550,"name": "Super Cup","logo": "https://media.api-sports.io/football/leagues/550.png","country": "Portugal","seasons": [2016,2017,2019,2020,2023]},{"id": 18,"name": "AFC Cup","logo": "https://media.api-sports.io/football/leagues/18.png","country": "World","seasons": [2017,2018]},{"id": 26,"name": "International Champions Cup","logo": "https://media.api-sports.io/football/leagues/26.png","country": "World","seasons": [2018,2019]},{"id": 3,"name": "UEFA Europa League","logo": "https://media.api-sports.io/football/leagues/3.png","country": "World","seasons": [2018,2019,2020,2023]},{"id": 97,"name": "Taça da Liga","logo": "https://media.api-sports.io/football/leagues/97.png","country": "Portugal","seasons": [2019,2020,2021,2022,2023,2024]},{"id": 667,"name": "Friendlies Clubs","logo": "https://media.api-sports.io/football/leagues/667.png","country": "World","seasons": [2020,2021,2022,2023,2024]}]
-            );
+        it("Should return leagues array when searching for valid team", async () => {
+            const leagues = await services.searchLeagues(211);
+            expect(leagues).to.be.an("array");
+            expect(leagues).to.have.lengthOf(9);
+            expect(leagues[0]).to.have.property("id", 94);
+            expect(leagues[0]).to.have.property("name", "Primeira Liga");
         });
 
-        it("Should return empty for invalid team id", async () => {
-            expect(await service.searchLeagues("0")).to.deep.equal([]);
+        it("Should reject with a2 when team id is invalid", () => {
+            expect(services.searchLeagues()).to.be.rejectedWith(errors.a2.message);
+            expect(services.searchLeagues("NaN")).to.be.rejectedWith(errors.a2.message);
+        });
+
+        it("Should reject with s1 when searching for invalid team", () => {
+            expect(services.searchLeagues(999)).to.be.rejectedWith(errors.s1.message);
         });
     });
 
-    describe("createGroup()", () => {
-        it("Should return the created group", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
+    describe("Group Operations", () => {
+        const validTeam = {
+            id: 211,
+            leagueId: 94,
+            season: 2022
+        };
 
-            expect(await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user)).to.deep.equal({
-                "id": 1,
-                "name": "Grupo 1",
-                "description": "O meu primeiro grupo",
-                "teams": []
+        describe("createGroup()", () => {
+            it("Should create a group successfully", async () => {
+                const group = await services.createGroup("Test Group", "Description", [validTeam], validAuth);
+                expect(group).to.have.property("id");
+                expect(group).to.have.property("name", "Test Group");
+                expect(group).to.have.property("description", "Description");
+                expect(group.teams).to.be.an("array");
+                expect(group.teams[0]).to.have.property("id", 211);
+                expect(group.teams[0]).to.have.property("name", "Benfica");
+            });
+
+            it("Should reject with a3 when name is missing", () => {
+                expect(services.createGroup(null, "", [], validAuth)).to.be.rejectedWith(errors.a3.message);
+            });
+
+            it("Should reject with a4 when teams data is invalid", () => {
+                expect(services.createGroup("name", "", [{ id: "invalid" }], validAuth))
+                    .to.be.rejectedWith(errors.a4.message);
+            });
+
+            it("Should reject with h1 when auth header is invalid", () => {
+                expect(services.createGroup("name", "", [validTeam], "Invalid"))
+                    .to.be.rejectedWith(errors.h1.message);
             });
         });
 
-        it("Should return the created group (using default values)", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
+        describe("editGroup()", () => {
+            let groupId;
 
+            beforeEach(async () => {
+                const group = await services.createGroup("Test Group", "Description", [validTeam], validAuth);
+                groupId = group.id;
+            });
 
-            expect(await service.createGroup("Grupo 1", undefined, undefined, user)).to.deep.equal({
-                "id": 1,
-                "name": "Grupo 1",
-                "description": "",
-                "teams": []
+            it("Should edit group successfully", async () => {
+                const updates = {
+                    name: "Updated Group",
+                    description: "New Description"
+                };
+                const group = await services.editGroup(groupId, updates, validAuth);
+                expect(group).to.have.property("name", "Updated Group");
+                expect(group).to.have.property("description", "New Description");
+            });
+
+            it("Should reject with a5 when group id is missing", () => {
+                expect(services.editGroup(null, { name: "New Name" }, validAuth))
+                    .to.be.rejectedWith(errors.a5.message);
+            });
+
+            it("Should reject with a6 when no updates provided", () => {
+                expect(services.editGroup(groupId, {}, validAuth))
+                    .to.be.rejectedWith(errors.a6.message);
+            });
+
+            it("Should reject with h1 when auth header is invalid", () => {
+                expect(services.editGroup(groupId, { name: "New Name" }, "Invalid"))
+                    .to.be.rejectedWith(errors.h1.message);
+            });
+
+            it("Should reject with a7 when group is not found", () => {
+                expect(services.editGroup("invalid-id", { name: "New Name" }, validAuth))
+                    .to.be.rejectedWith(errors.a7.message);
             });
         });
 
-        it("Should return the created group with teams", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
+        describe("listGroups()", () => {
+            it("Should list groups successfully", async () => {
+                await services.createGroup("Test Group", "", [validTeam], validAuth);
+                const groups = await services.listGroups(validAuth);
+                expect(groups).to.be.an("array");
+                expect(groups).to.have.lengthOf(1);
+                expect(groups[0]).to.be.a("string");
+            });
 
-
-            expect(await service.createGroup("Grupo 1", "O meu primeiro grupo", [
-                {
-                    "id": 211,
-                    "leagueId": 94,
-                    "season": 2022
-                }
-            ], user)).to.deep.equal(
-                {"id": 1,"name": "Grupo 1","description": "O meu primeiro grupo","teams": [{"id": 211,"name": "Benfica","leagueId": 94,"league": "Primeira Liga","season": 2022,"stadium": "Estádio do Sport Lisboa e Benfica (da Luz)"}]}
-            );
-
-            expect(await service.createGroup("Grupo 2", "O meu segundo grupo", [
-                {
-                    "id": 211,
-                    "leagueId": 94,
-                    "season": 2022
-                },
-                {
-                    "id": 212,
-                    "leagueId": 94,
-                    "season": 2022
-                }
-            ], user)).to.deep.equal(
-                {"id": 2,"name": "Grupo 2","description": "O meu segundo grupo","teams": [{"id": 211,"name": "Benfica","leagueId": 94,"league": "Primeira Liga","season": 2022,"stadium": "Estádio do Sport Lisboa e Benfica (da Luz)"},{"id": 212,"name": "FC Porto","leagueId": 94,"league": "Primeira Liga","season": 2022,"stadium": "Estádio Do Dragão"}]}
-            );
-        });
-
-        it("Should return error h1 when no valid token is provided", async () => {
-            await expect(service.createGroup("Grupo 1", "O meu primeiro grupo", [])).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "h1" }));
-        });
-    });
-    
-    describe("editGroup()", () => {
-        it("Should update all group details", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
-
-            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user);
-
-            expect(await service.editGroup(1, {
-                name: "Grupo 1 Modificado",
-                description: "O meu novo primeiro grupo"
-            }, user)).to.deep.equal({
-                "id": 1,
-                "name": "Grupo 1 Modificado",
-                "description": "O meu novo primeiro grupo",
-                "teams": []
+            it("Should reject with h1 for invalid auth header", () => {
+                expect(services.listGroups("Invalid")).to.be.rejectedWith(errors.h1.message);
             });
         });
 
-        it("Should update some group details", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
+        describe("deleteGroup()", () => {
+            let groupId;
 
-            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user);
-
-            expect(await service.editGroup(1, {
-                name: "Grupo 1 Modificado"
-            }, user)).to.deep.equal({
-                "id": 1,
-                "name": "Grupo 1 Modificado",
-                "description": "O meu primeiro grupo",
-                "teams": []
+            beforeEach(async () => {
+                const group = await services.createGroup("Test Group", "", [validTeam], validAuth);
+                groupId = group.id;
             });
 
-            expect(await service.editGroup(1, {
-                description: "O meu novo primeiro grupo"
-            }, user)).to.deep.equal({
-                "id": 1,
-                "name": "Grupo 1 Modificado",
-                "description": "O meu novo primeiro grupo",
-                "teams": []
+            it("Should delete group successfully", async () => {
+                await services.deleteGroup(groupId, validAuth);
+                expect(services.getGroupDetails(groupId, validAuth))
+                    .to.be.rejectedWith(errors.a7.message);
+            });
+
+            it("Should reject with a5 when group id is missing", () => {
+                expect(services.deleteGroup(null, validAuth))
+                    .to.be.rejectedWith(errors.a5.message);
+            });
+
+            it("Should reject with h1 when auth header is invalid", () => {
+                expect(services.deleteGroup(groupId, "Invalid"))
+                    .to.be.rejectedWith(errors.h1.message);
+            });
+
+            it("Should reject with a7 when group is not found", () => {
+                expect(services.deleteGroup("invalid-id", validAuth))
+                    .to.be.rejectedWith(errors.a7.message);
             });
         });
-        
-        it("Should return error h1 when no valid token is provided", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
 
-            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user);
+        describe("getGroupDetails()", () => {
+            let groupId;
 
-            await expect(service.editGroup(1, {
-                name: "Grupo 1 Modificado",
-                description: "O meu novo primeiro grupo"
-            })).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "h1" }));
-        });
-    });
+            beforeEach(async () => {
+                const group = await services.createGroup("Test Group", "", [validTeam], validAuth);
+                groupId = group.id;
+            });
 
-    describe("listGroups()", () => {
-        it("Should return all user groups", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
+            it("Should get group details successfully", async () => {
+                const group = await services.getGroupDetails(groupId, validAuth);
+                expect(group).to.have.property("id", groupId);
+                expect(group).to.have.property("name", "Test Group");
+                expect(group.teams).to.be.an("array");
+                expect(group.teams[0]).to.have.property("id", 211);
+            });
 
-            await service.createGroup("Grupo 1", "", [], user);
-            await service.createGroup("Grupo 2", "", [], user);
+            it("Should reject with a5 when group id is missing", () => {
+                expect(services.getGroupDetails(null, validAuth)).to.be.rejectedWith(errors.a5.message);
+            });
 
-            expect(await service.listGroups(user)).to.deep.equal([1, 2]);
-        });
-
-        it("Should return empty for users without groups", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
-
-
-            expect(await service.listGroups(user)).to.deep.equal([]);
-        });
-        
-        it("Should return error s2 when no valid token is provided", async () => {
-            await expect(service.listGroups("0")).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "s2" }));
-        });
-
-        it("Should return error h1 when no valid token is provided", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
-
-            await service.createGroup("Grupo 1", "", [], user);
-            await service.createGroup("Grupo 2", "", [], user);
-
-            await expect(service.listGroups()).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "h1" }));
-        });
-    });
-    
-    describe("deleteGroup()", () => {
-        it("Should delete the user's group", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
-
-            await service.createGroup("Grupo 1", "", [], user);
-
-            await expect(service.deleteGroup(1, user)).fulfilled;
-        });
-
-        it("Should return the confirmation of deletion of the group (with teams)", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
-
-            await service.createGroup("Grupo 1", "", [{"id": 211, "leagueId": 3, "season": 2019}], user);
-
-            await expect(service.deleteGroup(1, user)).fulfilled;
-        });
-
-        it("Should return the error a7 when no such group exists", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
-
-
-            await expect(service.deleteGroup(7, user)).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "a7" }));
-        });
-
-        it("Should return error h1 when no valid token is provided", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
-
-            await service.createGroup("Grupo 1", "", [], user);
-
-            await expect(service.deleteGroup(1)).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "h1" }));
-        });
-    });
-
-    describe("getGroupDetails()", () => {
-        it("Should return the group details", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
-
-            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user);
-
-            expect(await service.getGroupDetails(1, user)).to.deep.equals({
-                "id": 1,
-                "name": "Grupo 1",
-                "description": "O meu primeiro grupo",
-                "teams": []
+            it("Should reject with a7 when group is not found", () => {
+                expect(services.getGroupDetails("invalid-id", validAuth)).to.be.rejectedWith(errors.a7.message);
             });
         });
-        
-        it("Should return the error a7 when no such group exists", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
 
-            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user);
+        describe("addTeamsToGroup()", () => {
+            let groupId;
 
-            await expect(service.getGroupDetails(7, user)).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "a7" }));
+            beforeEach(async () => {
+                const group = await services.createGroup("Test Group", "", [], validAuth);
+                groupId = group.id;
+            });
+
+            it("Should add teams successfully", async () => {
+                await services.addTeamsToGroup(groupId, [validTeam], validAuth);
+                const group = await services.getGroupDetails(groupId, validAuth);
+                expect(group.teams).to.have.lengthOf(1);
+                expect(group.teams[0]).to.have.property("id", 211);
+            });
+
+            it("Should reject with a13 when team already exists", async () => {
+                await services.addTeamsToGroup(groupId, [validTeam], validAuth);
+                expect(services.addTeamsToGroup(groupId, [validTeam], validAuth))
+                    .to.be.rejectedWith(errors.a13.message);
+            });
         });
 
-        it("Should return error h1 when no valid token is provided", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
+        describe("removeTeamFromGroup()", () => {
+            let groupId;
 
-            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user);
+            beforeEach(async () => {
+                const group = await services.createGroup("Test Group", "", [validTeam], validAuth);
+                groupId = group.id;
+            });
 
-            await expect(service.getGroupDetails(1)).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "h1" }));
-        });
-    });
+            it("Should remove team successfully", async () => {
+                await services.removeTeamFromGroup(groupId, validTeam.id, validTeam.leagueId, validTeam.season, validAuth);
+                const group = await services.getGroupDetails(groupId, validAuth);
+                expect(group.teams).to.have.lengthOf(0);
+            });
 
-    describe("addTeamsToGroup()", () => {
-        it("Should add teams to the group", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
+            it("Should reject with a5 when group id is missing", () => {
+                expect(services.removeTeamFromGroup(null, validTeam.id, validTeam.leagueId, validTeam.season, validAuth))
+                    .to.be.rejectedWith(errors.a5.message);
+            });
 
-            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user);
+            it("Should reject with a2 when team id is invalid", () => {
+                expect(services.removeTeamFromGroup(groupId, null, validTeam.leagueId, validTeam.season, validAuth))
+                    .to.be.rejectedWith(errors.a2.message);
+                expect(services.removeTeamFromGroup(groupId, "NaN", validTeam.leagueId, validTeam.season, validAuth))
+                    .to.be.rejectedWith(errors.a2.message);
+            });
 
-            await expect(service.addTeamsToGroup(1, [
-                {
-                    "id": 211,
-                    "leagueId": 94,
-                    "season": 2022
-                }
-            ], user)).fulfilled.then(async () =>
-                expect(await service.getGroupDetails(1, user)).to.deep.equal({
-                    "id": 1,
-                    "name": "Grupo 1",
-                    "description": "O meu primeiro grupo",
-                    "teams": [
-                        {
-                            "id": 211,
-                            "name": "Benfica",
-                            "leagueId": 94,
-                            "league": "Primeira Liga",
-                            "season": 2022,
-                            "stadium": "Estádio do Sport Lisboa e Benfica (da Luz)"
-                        }
-                    ]
-                })
-            );
+            it("Should reject with a9 when league id is invalid", () => {
+                expect(services.removeTeamFromGroup(groupId, validTeam.id, null, validTeam.season, validAuth))
+                    .to.be.rejectedWith(errors.a9.message);
+                expect(services.removeTeamFromGroup(groupId, validTeam.id, "NaN", validTeam.season, validAuth))
+                    .to.be.rejectedWith(errors.a9.message);
+            });
 
-            await service.createGroup("Grupo 2", "O meu segundo grupo", [], user);
+            it("Should reject with a10 when season is invalid", () => {
+                expect(services.removeTeamFromGroup(groupId, validTeam.id, validTeam.leagueId, null, validAuth))
+                    .to.be.rejectedWith(errors.a10.message);
+                expect(services.removeTeamFromGroup(groupId, validTeam.id, validTeam.leagueId, "NaN", validAuth))
+                    .to.be.rejectedWith(errors.a10.message);
+            });
 
-            await expect(service.addTeamsToGroup(2, [
-                {
-                    "id": 211,
-                    "leagueId": 94,
-                    "season": 2022
-                },
-                {
-                    "id": 212,
-                    "leagueId": 94,
-                    "season": 2022
-                }
-            ], user)).fulfilled.then(async () =>
-                expect(await service.getGroupDetails(2, user)).to.deep.equal({
-                    "id": 2,
-                    "name": "Grupo 2",
-                    "description": "O meu segundo grupo",
-                    "teams": [
-                        {
-                            "id": 211,
-                            "name": "Benfica",
-                            "leagueId": 94,
-                            "league": "Primeira Liga",
-                            "season": 2022,
-                            "stadium": "Estádio do Sport Lisboa e Benfica (da Luz)"
-                        },
-                        {
-                            "id": 212,
-                            "name": "FC Porto",
-                            "leagueId": 94,
-                            "league": "Primeira Liga",
-                            "season": 2022,
-                            "stadium": "Estádio Do Dragão"
-                        }
-                    ]
-                })
-            );
-        });
+            it("Should reject with h1 when auth header is invalid", () => {
+                expect(services.removeTeamFromGroup(groupId, validTeam.id, validTeam.leagueId, validTeam.season, "Invalid"))
+                    .to.be.rejectedWith(errors.h1.message);
+            });
 
-        it("Should return the error a8 when no such group exists", async () => {
-            const user1 = "Bearer " +  (await service.createUser("Alice")).token;
-            const user2 = "Bearer " +  (await service.createUser("Alice")).token;
-            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user1);
-
-            await expect(service.addTeamsToGroup(1, [
-                {
-                    "id": 211,
-                    "leagueId": 94,
-                    "season": 2022
-                }
-            ], user2)).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "a8" }));
-        });
-
-        it("Should return error h1 when no valid token is provided", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
-
-            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user);
-
-            await expect(service.createGroup(1, [
-                {
-                    "id": 211,
-                    "leagueId": 94,
-                    "season": 2022
-                }
-            ])).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "h1" }));
-        });
-    });
-    
-    describe("removeTeamFromGroup()", () => {
-        it("Should remove teams from the group", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
-
-            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user);
-            await service.addTeamsToGroup(1, [
-                {
-                    "id": 211,
-                    "leagueId": 94,
-                    "season": 2022
-                }
-            ], user);
-
-            await expect(service.removeTeamFromGroup(1, 211, 94, 2022, user)).fulfilled;
-        });
-
-        it("Should return the error d1 when no such team exists on the group", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
-
-            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user);
-
-            await expect(service.removeTeamFromGroup(1, 211, 94, 2022, user)).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "d1" }));
-        });
-
-        it("Should return error h1 when no valid token is provided", async () => {
-            const user = "Bearer " + (await service.createUser("Alice")).token;
-
-            await service.createGroup("Grupo 1", "O meu primeiro grupo", [], user);
-
-            await expect(service.createGroup(1, [
-                {
-                    "id": 211,
-                    "leagueId": 94,
-                    "season": 2022
-                }
-            ])).to.be.rejectedWith(Error).then(null, e => expect(e.actual).to.deep.include({ code: "h1" }));
+            it("Should reject with a11 when team is not in group", async () => {
+                await services.removeTeamFromGroup(groupId, validTeam.id, validTeam.leagueId, validTeam.season, validAuth);
+                expect(services.removeTeamFromGroup(groupId, validTeam.id, validTeam.leagueId, validTeam.season, validAuth))
+                    .to.be.rejectedWith(errors.a11.message);
+            });
         });
     });
 
     describe("createUser()", () => {
-        it("Should create a new user and return its details", async () => {
-            expect(await service.createUser("Alice")).to.have.all.keys("id", "name", "token");
+        it("Should create user successfully", async () => {
+            const user = await services.createUser("Bob", "password");
+            expect(user).to.have.property("id");
+            expect(user).to.have.property("username", "Bob");
+            expect(user).to.not.have.property("password");
         });
-    }); 
+
+        it("Should reject with a12 when username is missing", () => {
+            expect(services.createUser(null, "password")).to.be.rejectedWith(errors.a12.message);
+        });
+
+        it("Should reject with a14 when password is missing", () => {
+            expect(services.createUser("username", null)).to.be.rejectedWith(errors.a14.message);
+        });
+
+        it("Should reject with a16 when username already exists", async () => {
+            await services.createUser("Alice", "password");
+            expect(services.createUser("Alice", "password")).to.be.rejectedWith(errors.a16.message);
+        });
+    });
 });

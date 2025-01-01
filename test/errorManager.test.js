@@ -1,4 +1,3 @@
-import { beforeEach, describe, it } from "mocha";
 import { expect } from "chai";
 import { error, errors, success } from "../src/utils/errorManager.js";
 
@@ -23,9 +22,9 @@ describe("Error Manager", () => {
 
     describe("error()", () => {
         it("Should return the correct error object", () => {
-            error(res, "w1");
-            expect(status).to.equal(errors.w1.status);
-            expect(json).to.deep.equal({ code: "w1", message: errors.w1.message });
+            error(res, "a0");
+            expect(status).to.equal(errors.a0.status);
+            expect(json).to.deep.equal({ code: "a0", message: errors.a0.message });
         });
 
         it("Should provide the default error object", () => {
