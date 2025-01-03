@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import crypto from "crypto";
 
 const throwError = code => Promise.reject({ code });
 
@@ -22,6 +22,12 @@ export default (api, foccacia) => {
             };
         })
     );
+
+    /**
+     * @param {String} pwd 
+     * @returns {String}
+     */
+    const hashPassword = pwd => crypto.createHash("sha256").update(pwd).digest("hex");
 
     async function getUserSafely(token) {
         const user = await foccacia.getUserByToken(token);
@@ -167,10 +173,24 @@ export default (api, foccacia) => {
                 return throwError("a12");
             else if (!password)
                 return throwError("a14");
-            else if (await foccacia.getUserByUsername(username))
+            else if (!(await foccacia.isUsernameAvailable(username)))
                 return throwError("a16");
 
-            const { password: _, ...user } = await foccacia.createUser(username, await bcrypt.hash(password, 10));
+            const { password: _, ...user } = await foccacia.createUser(username, hashPassword(password));
+            return user;
+        },
+
+        login: async (username, password) => {
+            if (!username)
+                return throwError("a12");
+            else if (!password)
+                return throwError("a14");
+
+            const user = await foccacia.login(username, hashPassword(password));
+
+            if (!user)
+                return throwError("a15");
+
             return user;
         }
     };

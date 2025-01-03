@@ -7,7 +7,7 @@ import webUiBuilder, { renderError } from "./foccacia-web-ui.js";
 import serviceBuilder from "../service/foccacia-services.js";
 import passportBuilder from "../auth/passport-config.js";
 import api from "../data/fapi-teams-data.js";
-// import fakeApi from "../data/fapi-teams-data-fake.js";
+// import api from "../data/fapi-teams-data-fake.js";
 import foccacia from "../data/foccacia-elastic.js";
 
 const PORT = 8080;
@@ -49,7 +49,7 @@ hbs.registerHelper("concat", function () {
 const service = serviceBuilder(api, foccacia);
 const webApi = webApiBuilder(service);
 const webUi = webUiBuilder(service);
-passportBuilder(foccacia);
+passportBuilder(service);
 
 //#region Middlewares
 
@@ -92,12 +92,8 @@ app.post("/api/users", webApi.createUser);
 app.get("/", webUi.home);
 app.get("/signup", webUi.signupForm);
 app.post("/signup", webUi.signup);
-app.get("/login", webUi.login);
-app.post("/login", passport.authenticate("local", {
-    successRedirect: "/groups",
-    failureRedirect: "/login",
-    failureMessage: true
-}));
+app.get("/login", webUi.loginForm);
+app.post("/login", webUi.login);
 app.post("/logout", webUi.logout);
 
 app.get("/search", webUi.searchTeams);

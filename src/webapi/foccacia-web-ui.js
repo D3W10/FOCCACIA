@@ -55,35 +55,65 @@ export default (service) => ({
      * @param {Response} res 
      */
     signupForm: (req, res) => {
-        handleError(req, res, () => res.render("signin/signup"));
-    },
-
-    /**
-     * @param {Request} req 
-     * @param {Response} res 
-     */
-    signup: (req, res) => {
-        handleError(req, res, async () => {
-            try {
-                const { username, password } = req.body;
-                await service.createUser(username, password);
-                res.redirect("/login");
-            }
-            catch {
-                res.redirect("/signup");
-            }
-        });
-    },
-
-    /**
-     * @param {Request} req 
-     * @param {Response} res 
-     */
-    login: (req, res) => {
-        handleError(req, res, () => res.render("signin/login", {
-            // @ts-ignore
-            message: req.session.messages ? req.session.messages[req.session.messages.length - 1] : undefined
+        handleError(req, res, () => res.render("signin/signup", {
+            error: req.query.error === "true",
         }));
+    },
+
+    /**
+     * @param {Request} req 
+     * @param {Response} res 
+     */
+    signup: async (req, res) => {
+        try {
+            const { username, password } = req.body;
+            const user = await service.createUser(username, password);
+            
+            req.login(user, err => {
+                if (err)
+                    throw err;
+
+                // Prevent 404 page due to many elasticsearch requests
+                setTimeout(() => res.redirect("/groups"), 2000);
+            });
+        }
+        catch (e) {
+            console.error(e);
+            res.redirect("/signup?error=true");
+        }
+    },
+
+    /**
+     * @param {Request} req 
+     * @param {Response} res 
+     */
+    loginForm: (req, res) => {
+        handleError(req, res, () => res.render("signin/login", {
+            error: req.query.error === "true",
+        }));
+    },
+
+    /**
+     * @param {Request} req 
+     * @param {Response} res 
+     */
+    login: async (req, res) => {
+        try {
+            const { username, password } = req.body;
+            const user = await service.login(username, password);
+            
+            req.login(user, err => {
+                if (err)
+                    throw err;
+
+                // Prevent 404 page due to many elasticsearch requests
+                setTimeout(() => res.redirect("/groups"), 2000);
+            });
+        }
+        catch (e) {
+            console.error(e);
+            res.redirect("/login?error=true");
+        }
     },
 
     logout: (req, res) => {

@@ -182,13 +182,13 @@ async function removeTeamFromGroup(id, idTeam, leagueId, season) {
 }
 
 /**
- * Gets a user by their username
+ * Checks if a username is being used
  * @param {String} username
- * @returns {Promise<User | undefined>}
+ * @returns {Promise<Boolean>}
  */
-async function getUserByUsername(username) {
+async function isUsernameAvailable(username) {
     const data = await fetchData(`users/_search?q=username:"${username}"`);
-    return data && data.hits.hits.length > 0 ? parseUser(data.hits.hits[0]) : undefined;
+    return data == undefined || data.hits.hits.length == 0;
 }
 
 /**
@@ -210,6 +210,21 @@ async function createUser(username, password) {
     };
 }
 
+/**
+ * Logs in a user
+ * @param {String} username
+ * @param {String} password 
+ * @returns {Promise<User | undefined>}
+ */
+async function login(username, password) {
+    const data = await fetchData(`users/_search?q=username:"${username}"`);
+    if (!data || data.hits.hits.length == 0)
+        return undefined;
+
+    const user = parseUser(data.hits.hits[0]);
+    return user.password == password ? user : undefined;
+}
+
 export default {
     getUserByToken,
     getGroupById,
@@ -220,6 +235,7 @@ export default {
     addTeamsToGroup,
     getTeamOfGroup,
     removeTeamFromGroup,
+    isUsernameAvailable,
     createUser,
-    getUserByUsername
+    login
 }

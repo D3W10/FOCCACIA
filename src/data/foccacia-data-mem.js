@@ -157,12 +157,12 @@ function removeTeamFromGroup(id, idTeam, leagueId, season) {
 }
 
 /**
- * Gets a user by their username
+ * Checks if a username is being used
  * @param {String} username
- * @returns {Promise<User | undefined>}
+ * @returns {Promise<Boolean>}
  */
-function getUserByUsername(username) {
-    return Promise.resolve(users.find(u => u.username == username)) 
+function isUsernameAvailable(username) {
+    return Promise.resolve(users.find(u => u.username == username) == undefined);
 }
 
 /**
@@ -183,6 +183,16 @@ function createUser(username, password) {
     return Promise.resolve(newUser);
 }
 
+/**
+ * Logs in a user
+ * @param {String} username
+ * @param {String} password 
+ * @returns {Promise<User | undefined>}
+ */
+function login(username, password) {
+    return Promise.resolve(users.find(u => u.username == username && u.password == password));
+}
+
 function resetData() {
     nextUserId = USER_ID_START;
     nextGroupId = GROUP_ID_START;
@@ -200,7 +210,8 @@ export default {
     addTeamsToGroup,
     getTeamOfGroup,
     removeTeamFromGroup,
-    getUserByUsername,
+    isUsernameAvailable,
     createUser,
+    login,
     resetData
 }
