@@ -1,0 +1,43 @@
+<script>
+    function openSonner(sonner) {
+        sonner.style.display = "flex";
+        setTimeout(() => {
+            sonner.style.opacity = "1";
+            sonner.style.translate = "unset";
+            sonner.style.scale = "unset";
+            sonner.style.setProperty("--sonner-time-bar", "100%");
+            setTimeout(() => closeSonner(sonner), 5000);
+        }, 50);
+    }
+
+    function closeSonner(sonner) {
+        if (sonner.hasAttribute("style")) {
+            sonner.style.removeProperty("opacity");
+            sonner.style.removeProperty("translate");
+            sonner.style.removeProperty("scale");
+            setTimeout(() => sonner.removeAttribute("style"), 200);
+        }
+    }
+
+    function closeDialog(dialog, action) {
+        dialog.classList.remove("open");
+        setTimeout(() => dialog.close(), 200);
+
+        if (action)
+            action();
+    }
+
+    function startLoading() {
+        document.getElementById("loadingScreen").style.display = "flex";
+        setTimeout(() => {
+            document.getElementById("loadingScreen").style.opacity = "1";
+        }, 50);
+    }
+
+    function stopLoading() {
+        if (document.getElementById("loadingScreen").hasAttribute("style")) {
+            document.getElementById("loadingScreen").style.opacity = "0";
+            setTimeout(() => document.getElementById("loadingScreen").removeAttribute("style"), 300);
+        }
+    }
+</script>

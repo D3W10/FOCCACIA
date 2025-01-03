@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {{> head}}
+        <title>FOCCACIA | Log In</title>
+        {{> script}}
+    </head>
+    <body class="w-full min-h-full flex flex-col justify-center items-center">
+        {{#if error}}
+            {{#> sonner}}
+                <p class="font-semibold">Login failed!</p>
+                <p class="mt-1 text-sm text-stone-700">Invalid username or password</p>
+            {{/sonner}}
+        {{/if}}
+        {{#> signin btnText="Log In" method="POST" action="/login"}}
+            Don't have an account? {{#> button link=true anchor=true href="/signup"}}Sign up{{/button}} instead
+        {{/signin}}
+    </body>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        params.delete("error");
+        window.history.replaceState({}, "", window.location.pathname + (params.size != 0 ? "?" + params.toString() : ""));
+    </script>
+</html>

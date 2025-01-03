@@ -8,3 +8,27 @@
 html, body {
     @apply w-screen h-screen font-display;
 }
+
+dialog[open] {
+    @apply w-full h-full max-w-none max-h-none flex justify-center items-center bg-transparent backdrop:bg-stone-900/70 backdrop:backdrop-blur-[2px];
+}
+
+dialog.open {
+    @apply opacity-100 scale-100;
+}
+
+dialog::backdrop {
+    @apply opacity-0 transition-opacity duration-200 ease-in-out;
+}
+
+dialog.open::backdrop {
+    @apply opacity-100;
+}
+
+dialog > div {
+    @apply opacity-0 scale-50 transition duration-200 ease-in;
+}
+
+dialog.open > div {
+    @apply opacity-100 scale-100 ease-out;
+}

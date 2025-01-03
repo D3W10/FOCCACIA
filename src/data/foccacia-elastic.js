@@ -182,13 +182,25 @@ async function removeTeamFromGroup(id, idTeam, leagueId, season) {
 }
 
 /**
+ * Checks if a username is being used
+ * @param {String} username
+ * @returns {Promise<Boolean>}
+ */
+async function isUsernameAvailable(username) {
+    const data = await fetchData(`users/_search?q=username:"${username}"`);
+    return data == undefined || data.hits.hits.length == 0;
+}
+
+/**
  * Creates a new user
- * @param {String} name
+ * @param {String} username
+ * @param {String} password
  * @returns {Promise<User>}
  */
-async function createUser(name) {
+async function createUser(username, password) {
     const newUser = {
-        name,
+        username,
+        password,
         token: crypto.randomUUID()
     };
 
@@ -196,6 +208,21 @@ async function createUser(name) {
         id: (await fetchData("users/_doc", "POST", newUser))._id,
         ...newUser
     };
+}
+
+/**
+ * Logs in a user
+ * @param {String} username
+ * @param {String} password 
+ * @returns {Promise<User | undefined>}
+ */
+async function login(username, password) {
+    const data = await fetchData(`users/_search?q=username:"${username}"`);
+    if (!data || data.hits.hits.length == 0)
+        return undefined;
+
+    const user = parseUser(data.hits.hits[0]);
+    return user.password == password ? user : undefined;
 }
 
 export default {
@@ -208,5 +235,7 @@ export default {
     addTeamsToGroup,
     getTeamOfGroup,
     removeTeamFromGroup,
-    createUser
+    isUsernameAvailable,
+    createUser,
+    login
 }

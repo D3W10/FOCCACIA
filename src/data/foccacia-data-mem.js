@@ -6,6 +6,7 @@
  * @property {String} league
  * @property {Number} season
  * @property {String} stadium
+ * @property {String} logo
  *
  * @typedef {Object} Group
  * @property {String} id
@@ -22,7 +23,8 @@
  * 
  * @typedef {Object} User
  * @property {String} id
- * @property {String} name
+ * @property {String} username
+ * @property {String} password
  * @property {String} token
  */
 
@@ -155,19 +157,40 @@ function removeTeamFromGroup(id, idTeam, leagueId, season) {
 }
 
 /**
+ * Checks if a username is being used
+ * @param {String} username
+ * @returns {Promise<Boolean>}
+ */
+function isUsernameAvailable(username) {
+    return Promise.resolve(users.find(u => u.username == username) == undefined);
+}
+
+/**
  * Creates a new user
- * @param {String} name
+ * @param {String} username
+ * @param {String} password
  * @returns {Promise<User>}
  */
-function createUser(name) {
+function createUser(username, password) {
     const newUser = {
         id: (nextUserId++).toString(),
-        name,
+        username,
+        password,
         token: crypto.randomUUID()
     };
 
     users.push(newUser);
     return Promise.resolve(newUser);
+}
+
+/**
+ * Logs in a user
+ * @param {String} username
+ * @param {String} password 
+ * @returns {Promise<User | undefined>}
+ */
+function login(username, password) {
+    return Promise.resolve(users.find(u => u.username == username && u.password == password));
 }
 
 function resetData() {
@@ -187,6 +210,8 @@ export default {
     addTeamsToGroup,
     getTeamOfGroup,
     removeTeamFromGroup,
+    isUsernameAvailable,
     createUser,
+    login,
     resetData
 }

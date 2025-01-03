@@ -109,6 +109,6 @@ export default (service) => ({
      * @param {Response} res 
      */
     createUser: (req, res) => {
-        handleError(res, () => service.createUser(req.body.name), 201);
+        handleError(res, () => service.createUser(req.body.username, req.body.password), 201);
     }
 });

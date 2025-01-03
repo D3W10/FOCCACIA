@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {{> head}}
+        <title>FOCCACIA | Groups</title>
+        {{> script}}
+    </head>
+    <body>
+        {{> navbar loggedIn=loggedIn}}
+        <div class="w-full flex flex-col justify-start items-center">
+            <div class="w-full max-w-8xl my-20 flex flex-col">
+                {{#if deleted}}
+                    {{#> sonner}}
+                        <p class="font-semibold">Group deleted successfully!</p>
+                        <p class="mt-1 text-sm text-stone-700">The group has been deleted successfully</p>
+                    {{/sonner}}
+                {{/if}}
+                <div class="w-full mb-6 flex justify-between items-start">
+                    <div class="space-y-2">
+                        <h1 class="text-3xl font-bold">Groups</h1>
+                    </div>
+                    <div class="flex space-x-4">
+                        {{#> button anchor=true href="/groups/create"}}Create group{{/button}}
+                    </div>
+                </div>
+                {{#if hasGroups}}
+                    <table class="w-full bg-stone-100 rounded-xl shadow ring-1 ring-stone-900/10 divide-y divide-stone-900/10 overflow-hidden">
+                        <tr class="font-medium text-left bg-stone-300/75 border-b border-stone-900/10 divide-x divide-stone-900/10">
+                            <th class="w-2/10 px-4 py-3 pl-6 text-left">Name</th>
+                            <th class="w-7/10 px-4 py-3 text-left">Description</th>
+                            <th class="w-1/10 px-4 py-3 pr-6 text-left">Action</th>
+                        </tr>
+                        {{#each groups}}
+                            <tr class="divide-x divide-stone-900/10 odd:bg-stone-200">
+                                <td class="px-4 py-3 pl-6 flex flex-col">{{this.name}}</td>
+                                <td class="px-4 py-3 text-stone-500">{{this.description}}</td>
+                                <td class="px-4 py-3 pr-6 text-center">
+                                    {{#> button link=true anchor=true href=(concat "/groups/" this.id)}}Details{{/button}}
+                                </td>
+                            </tr>
+                        {{/each}}
+                    </table>
+                {{else}}
+                    {{#> box}}
+                        <p>You have no groups</p>
+                    {{/box}}
+                {{/if}}
+            </div>
+        </div>
+    </body>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        params.delete("deleteSuccess");
+        window.history.replaceState({}, "", window.location.pathname + (params.size != 0 ? "?" + params.toString() : ""));
+    </script>
+</html>

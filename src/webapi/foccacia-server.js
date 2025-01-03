@@ -1,10 +1,13 @@
 import express from "express";
 import hbs from "hbs";
+import session from "express-session";
+import passport from "passport";
 import webApiBuilder from "./foccacia-web-api.js";
-import webUiBuilder from "./foccacia-web-ui.js";
+import webUiBuilder, { renderError } from "./foccacia-web-ui.js";
 import serviceBuilder from "../service/foccacia-services.js";
+import passportBuilder from "../auth/passport-config.js";
 import api from "../data/fapi-teams-data.js";
-// import fakeApi from "../data/fapi-teams-data-fake.js";
+// import api from "../data/fapi-teams-data-fake.js";
 import foccacia from "../data/foccacia-elastic.js";
 
 const PORT = 8080;
@@ -15,12 +18,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 app.set("view engine", "hbs");
-app.set("views", "views");
+app.set("views", "views/pages");
 
 //#region Handlebars
 
 hbs.registerPartials("./views/components");
 hbs.registerPartials("./views/common");
+hbs.registerPartials("./views/icons");
 hbs.registerHelper("eq", (a, b) => a === b);
 hbs.registerHelper("not", v => !v);
 hbs.registerHelper("and", function () {
@@ -45,6 +49,26 @@ hbs.registerHelper("concat", function () {
 const service = serviceBuilder(api, foccacia);
 const webApi = webApiBuilder(service);
 const webUi = webUiBuilder(service);
+passportBuilder(service);
+
+//#region Middlewares
+
+app.use(session({
+    secret: "foccacia-secret",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+const checkAuth = (req, res, next) => {
+    if (!req.route || req.isAuthenticated())
+        return next();
+
+    res.redirect("/login");
+};
+
+//#endregion
 
 //#region API Endpoints
 
@@ -66,19 +90,29 @@ app.post("/api/users", webApi.createUser);
 //#region UI Endpoints
 
 app.get("/", webUi.home);
-app.get("/signup", webUi.signup);
-app.get("/login", webUi.login);
-app.get("/groups", webUi.listGroups);
-app.get("/groups/create", webUi.createGroupForm);
-app.post("/groups/create", webUi.createGroup);
-app.get("/groups/:id", webUi.getGroupDetails);
-app.get("/groups/:id/edit", webUi.editGroupForm);
-app.post("/groups/:id/edit", webUi.editGroup);
-app.post("/groups/:id/delete", webUi.deleteGroup);
-app.get("/groups/:id/teams", webUi.searchTeams);
-app.get("/groups/:id/teams/:team/leagues", webUi.getLeagues);
-app.post("/groups/:id/teams/:team/leagues", webUi.addTeamToGroup);
-app.post("/groups/:id/teams/:team/leagues/:league/seasons/:season", webUi.removeTeamFromGroup);
+app.get("/signup", webUi.signupForm);
+app.post("/signup", webUi.signup);
+app.get("/login", webUi.loginForm);
+app.post("/login", webUi.login);
+app.post("/logout", webUi.logout);
+
+app.get("/search", webUi.searchTeams);
+app.get("/search/:team", webUi.getLeagues);
+
+app.get("/groups", checkAuth, webUi.listGroups);
+app.get("/groups/create", checkAuth, webUi.createGroupForm);
+app.post("/groups/create", checkAuth, webUi.createGroup);
+app.get("/groups/:id", checkAuth, webUi.getGroupDetails);
+app.get("/groups/:id/edit", checkAuth, webUi.editGroupForm);
+app.post("/groups/:id/edit", checkAuth, webUi.editGroup);
+app.post("/groups/:id/teams/:team/leagues", checkAuth, webUi.addTeamToGroup);
+
+app.use((req, res, next) => {
+    if (!req.route)
+        return renderError(req, res, { code: "a0" });
+
+    next();
+});
 
 //#endregion
 

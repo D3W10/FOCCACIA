@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {{> head}}
+        <title>FOCCACIA | {{name}}</title>
+        {{> script}}
+    </head>
+    <body>
+        {{> navbar loggedIn=loggedIn}}
+        {{> loading}}
+        <div class="w-full flex flex-col justify-start items-center">
+            <div class="w-full max-w-8xl my-20 flex flex-col">
+                {{#if created}}
+                    {{#> sonner}}
+                        <p class="font-semibold">Group created successfully!</p>
+                        <p class="mt-1 text-sm text-stone-700">The group {{name}} was created successfully</p>
+                    {{/sonner}}
+                {{/if}}
+                {{#if edited}}
+                    {{#> sonner}}
+                        <p class="font-semibold">Group edited successfully!</p>
+                        <p class="mt-1 text-sm text-stone-700">The group {{name}} was updated successfully</p>
+                    {{/sonner}}
+                {{/if}}
+                {{#if added}}
+                    {{#> sonner}}
+                        <p class="font-semibold">Team added successfully!</p>
+                        <p class="mt-1 text-sm text-stone-700">The team has been added to {{name}}</p>
+                    {{/sonner}}
+                {{/if}}
+                {{#if removed}}
+                    {{#> sonner}}
+                        <p class="font-semibold">Team removed successfully!</p>
+                        <p class="mt-1 text-sm text-stone-700">The team has been removed from {{name}}</p>
+                    {{/sonner}}
+                {{/if}}
+                <div class="w-full mb-6 flex justify-between items-start">
+                    <div class="space-y-2">
+                        <h1 class="text-3xl font-bold">{{name}}</h1>
+                        <p class="text-stone-700 font-medium">{{description}}</p>
+                    </div>
+                    <div class="flex space-x-4">
+                        {{#> button secondary=true onclick="attemptDelete()"}}Delete Group{{/button}}
+                        {{#> button anchor=true href=(concat id "/edit")}}Edit Group{{/button}}
+                    </div>
+                </div>
+                {{#if hasTeams}}
+                    <table class="w-full bg-stone-100 rounded-xl shadow ring-1 ring-stone-900/10 divide-y divide-stone-900/10 overflow-hidden">
+                        <tr class="font-medium text-left bg-stone-300/75 border-b border-stone-900/10 divide-x divide-stone-900/10">
+                            <th class="w-1/10 px-4 py-3 pl-6 text-left">Icon</th>
+                            <th class="w-3/10 px-4 py-3 text-left">Name</th>
+                            <th class="w-3/10 px-4 py-3 text-left">League</th>
+                            <th class="w-2/10 px-4 py-3 text-left">Season</th>
+                            <th class="w-1/10 px-4 py-3 pr-6 text-left">Action</th>
+                        </tr>
+                        {{#each teams}}
+                            <tr class="divide-x divide-stone-900/10 odd:bg-stone-200">
+                                <td class="pl-6 py-1.5">
+                                    <img src="{{this.logo}}" alt="{{this.name}}" class="h-12 object-contain" />
+                                </td>
+                                <td class="px-4 py-3">{{this.name}}</td>
+                                <td class="px-4 py-3">{{this.league}}</td>
+                                <td class="px-4 py-3">{{this.season}}</td>
+                                <td class="px-4 py-3 pr-6 text-center">
+                                    {{#> button link=true onclick=(concat "attemptRemove('" @root.id "'," this.id "," this.leagueId "," this.season ")")}}Remove{{/button}}
+                                </td>
+                            </tr>
+                        {{/each}}
+                    </table>
+                {{else}}
+                    {{#> box}}
+                        <p>This group has no teams</p>
+                    {{/box}}
+                {{/if}}
+            </div>
+        </div>
+        {{> dialog title="Remove Team" text="Are you sure you want to remove this team from the group?" id="removeDialog" callback="removeTeam"}}
+        {{> dialog title="Delete Group" text=(concat "Are you sure you want to delete the group \"" name "\"? You cannot undo this action!") id="deleteDialog" callback="deleteGroup"}}
+    </body>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        params.delete("createdSuccess");
+        params.delete("editedSuccess");
+        params.delete("addSuccess");
+        params.delete("removeSuccess");
+        window.history.replaceState({}, "", window.location.pathname + (params.size != 0 ? "?" + params.toString() : ""));
+
+        let teamToRemove = [];
+
+        function attemptDelete() {
+            document.getElementById("deleteDialog").showModal();
+            document.getElementById("deleteDialog").classList.add("open");
+        }
+
+        async function deleteGroup() {
+            await fetch(`/api/groups/{{id}}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "{{token}}"
+                }
+            });
+
+            startLoading();
+
+            // Prevent 404 page due to many elasticsearch requests
+            setTimeout(() => window.open(`/groups?deleteSuccess=true`, "_self"), 2000);
+        }
+
+        function attemptRemove(id, idt, idl, season) {
+            teamToRemove = [id, idt, idl, season];
+            document.getElementById("removeDialog").showModal();
+            document.getElementById("removeDialog").classList.add("open");
+        }
+
+        async function removeTeam() {
+            if (teamToRemove.length == 0)
+                return;
+
+            const [id, idt, idl, season] = teamToRemove;
+            await fetch(`/api/groups/${id}/teams/${idt}/leagues/${idl}/seasons/${season}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "{{token}}"
+                }
+            });
+
+            window.open(`/groups/${id}?removeSuccess=true`, "_self");
+        }
+    </script>
+</html>

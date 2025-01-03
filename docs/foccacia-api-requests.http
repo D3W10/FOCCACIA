@@ -137,5 +137,6 @@ POST {{url}}/api/users
 Content-Type: application/json
 
 {
-    "name" : "Alice"
+    "username" : "Alice",
+    "password" : "foccacia"
 }
