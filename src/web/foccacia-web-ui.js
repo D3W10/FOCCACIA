@@ -33,7 +33,7 @@ export function renderError(req, res, e) {
     console.error(e.code ? message : e);
 
     res.status(status).render("error", {
-        loggedIn: req.user != undefined,
+        loggedIn: req.isAuthenticated(),
         status,
         message
     });
@@ -46,7 +46,7 @@ export default (service) => ({
      */
     home: (req, res) => {
         handleError(req, res, () => res.render("home", {
-            loggedIn: req.user != undefined
+            loggedIn: req.isAuthenticated()
         }));
     },
 
@@ -133,7 +133,7 @@ export default (service) => ({
             ));
 
             res.render("groups/list", {
-                loggedIn: req.user != undefined,
+                loggedIn: req.isAuthenticated(),
                 hasGroups: groups.length > 0,
                 groups,
                 deleted: req.query.deleteSuccess === "true"
@@ -147,7 +147,7 @@ export default (service) => ({
      */
     createGroupForm: (req, res) => {
         handleError(req, res, () => res.render("groups/create", {
-            loggedIn: req.user != undefined
+            loggedIn: req.isAuthenticated()
         }));
     },
 
@@ -172,7 +172,7 @@ export default (service) => ({
             const group = await service.getGroupDetails(req.params.id, buildAuth(req.user));
 
             res.render("groups/details", {
-                loggedIn: req.user != undefined,
+                loggedIn: req.isAuthenticated(),
                 id: req.params.id,
                 name: group.name,
                 description: group.description,
@@ -197,7 +197,7 @@ export default (service) => ({
             const group = await service.getGroupDetails(req.params.id, buildAuth(req.user));
 
             res.render("groups/edit", {
-                loggedIn: req.user != undefined,
+                loggedIn: req.isAuthenticated(),
                 id: req.params.id,
                 name: group.name,
                 description: group.description
@@ -228,20 +228,20 @@ export default (service) => ({
         handleError(req, res, async () => {
             if (!req.query.team)
                 res.render("search/bar", {
-                    loggedIn: req.user != undefined
+                    loggedIn: req.isAuthenticated()
                 });
             else {
                 const teams = await service.searchTeams(req.query.team);
 
                 if (teams.length == 0)
                     res.render("search/bar", {
-                        loggedIn: req.user != undefined,
+                        loggedIn: req.isAuthenticated(),
                         failSearch: true,
                         query: req.query.team
                     });
                 else
                     res.render("search/teams", {
-                        loggedIn: req.user != undefined,
+                        loggedIn: req.isAuthenticated(),
                         query: req.query.team,
                         teams: teams
                     });
@@ -260,7 +260,7 @@ export default (service) => ({
             leagues.forEach(l => l.seasons.reverse());
 
             res.render("search/leagues", {
-                loggedIn: req.user != undefined,
+                loggedIn: req.isAuthenticated(),
                 team: req.params.team,
                 leagues,
                 token: req.isAuthenticated() ? buildAuth(req.user) : ""

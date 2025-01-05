@@ -186,7 +186,7 @@ export default (api, foccacia) => {
             else if (!password)
                 return throwError("a14");
 
-            const user = await foccacia.login(username, hashPassword(password));
+            const { password: _, ...user } = await foccacia.login(username, hashPassword(password));
 
             if (!user)
                 return throwError("a15");

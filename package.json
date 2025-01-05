@@ -1,7 +1,7 @@
 {
     "name": "foccacia",
     "version": "1.0.0",
-    "description": "Foccacia API - PI assignment 2",
+    "description": "FOCCACIA Team Management",
     "author": "G06",
     "scripts": {
         "start": "node .",
@@ -9,7 +9,7 @@
         "test": "mocha --recursive",
         "style": "npx @tailwindcss/cli -i ./public/styles/main.css -o ./public/styles/output.css --watch"
     },
-    "main": "src/webapi/foccacia-server.js",
+    "main": "src/web/foccacia-server.js",
     "type": "module",
     "dependencies": {
         "chai-as-promised": "^8.0.1",
