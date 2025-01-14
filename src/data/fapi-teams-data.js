@@ -17,7 +17,7 @@
  */
 
 const API_URL = "https://v3.football.api-sports.io";
-const API_KEY = "83a825990145b3950d8add20554c52e6";
+const API_KEY = "YOUR_API_KEY";
 
 /**
  * @param {Object} t 

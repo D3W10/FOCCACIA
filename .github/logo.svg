@@ -1,0 +1,7 @@
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <radialGradient id="a" fx="0.25" fy="0.25">
+        <stop offset="0" stop-color="oklch(0.837 0.128 66.29)" />
+        <stop offset="1" stop-color="oklch(0.646 0.222 41.116)" />
+    </radialGradient>
+    <circle cx="12" cy="12" r="12" fill="url(#a)" />
+</svg>
