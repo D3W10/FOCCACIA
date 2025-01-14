@@ -78,7 +78,7 @@ In order to run the application, you will need the following tools:
     ```
 8. Run the application
     ```sh
-    npm run dev
+    npm run start
     ```
 
 <br />
